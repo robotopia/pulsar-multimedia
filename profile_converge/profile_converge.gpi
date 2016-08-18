@@ -1,0 +1,39 @@
+set terminal pngcairo enhanced size 960,900 background rgb "black"
+
+unset border
+unset tics
+unset key
+
+set xrange [480:679]
+
+set style line 1 lc rgb "white"
+
+pulses = "pulses.dat"
+
+framerate = 24
+npulses = system("tail -1 ".pulses." | cut -d' ' -f1") + 1
+nphasebins = system("grep -c \"^0 \" ".pulses)
+
+totaltime = 30.0 # seconds
+nframes = totaltime * framerate
+
+pulse(T) = floor(exp((T/totaltime)*log(npulses)))
+
+do for [frame=1:nframes] {
+    print "Plotting frame ".frame
+    T = totaltime*frame/nframes
+    P = pulse(T)
+    avg_pulses = "< head -".(nphasebins*P)." ".pulses
+    this_pulse  = "< grep \"^".(P-1)." \" ".pulses
+    set output "images/frame_".sprintf("%04d",frame-1).".png"
+    set multiplot layout 2,1
+    set label 1 "Mean" at screen 0.1,0.9 tc rgb "white" font ",20"
+    unset yrange
+    plot avg_pulses u 2:($3/P) with lines smooth frequency ls 1
+    unset label 1
+    set label 2 "Pulse #".P at screen 0.1,0.4 tc rgb "white" font ",20"
+    set yrange [-0.5:7.0]
+    plot this_pulse u 2:3 with lines ls 1
+    unset label 2
+    unset multiplot
+}
