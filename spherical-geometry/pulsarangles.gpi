@@ -8,6 +8,7 @@ rotcol = "yellow"  # For rotation axes etc
 zetcol = "#c0ffc0" # For zeta
 alpcol = "#ffc0c0" # For alpha
 gamcol = "#c0c0ff" # For gamma
+angcol = "red"     # For angles
 
 # Angle manipulationn utility functions
 
@@ -31,12 +32,19 @@ GCy(px,py,pz,qx,qy,qz,r,u) = r*((1-u)*py+u*qy)/sqrt(((1-u)*px+u*qx)**2+((1-u)*py
 GCz(px,py,pz,qx,qy,qz,r,u) = r*((1-u)*pz+u*qz)/sqrt(((1-u)*px+u*qx)**2+((1-u)*py+u*qy)**2+((1-u)*pz+u*qz)**2)
 
 # Define (co-)latitudal circles (LCs) around an arbitrary polar point parametrically
-# p = "polar" point
-# q = point that defines where to start drawing (co-planar with origin)
+# p = "polar" point (assumed to be normalized)
 # colat = colatitude of proposed
 # r = spherical radius (i.e. from origin)
 # u = parameter (from 0 to 1 for complete circle)
-LCx(px,py,pz,qx,qy,qz,colat,r,u) = u
+hypot(x,y) = sqrt(x**2+y**2)
+LCx(px,py,pz,colat,r,u) = X(r,colat,u)*px*pz/hypot(px,py) - \
+                          Y(r,colat,u)*py/hypot(px,py) + \
+                          Z(r,colat,u)*px
+LCy(px,py,pz,colat,r,u) = X(r,colat,u)*py*pz/hypot(px,py) + \
+                          Y(r,colat,u)*px/hypot(px,py) + \
+                          Z(r,colat,u)*py
+LCz(px,py,pz,colat,r,u) = -X(r,colat,u)*hypot(px,py) + \
+                          Z(r,colat,u)*pz
 
 # For the pulsar geometry displayed, choose
 alpha = deg2rad(30) # Angle between rotation and magnetic axes
@@ -71,6 +79,23 @@ bx(u) = X(1,(zeta-alpha)*u+alpha,phi)
 by(u) = Y(1,(zeta-alpha)*u+alpha,phi)
 bz(u) = Z(1,(zeta-alpha)*u+alpha,phi)
 
+# Set geometry for angles
+anglesize = 0.06
+anglabfact = 1.4
+
+# Line for phi angle
+phix(u) = X(1,anglesize,u*phi)
+phiy(u) = Y(1,anglesize,u*phi)
+phiz(u) = Z(1,anglesize,u*phi)
+
+# Line for sigma angle
+sigx(u) = LCx(ax(1),ay(1),az(1),anglesize,1,-u*sigma)
+sigy(u) = LCy(ax(1),ay(1),az(1),anglesize,1,-u*sigma)
+sigz(u) = LCz(ax(1),ay(1),az(1),anglesize,1,-u*sigma)
+siglabx = LCx(ax(1),ay(1),az(1),anglesize*anglabfact,1,-0.5*sigma)
+siglaby = LCy(ax(1),ay(1),az(1),anglesize*anglabfact,1,-0.5*sigma)
+siglabz = LCz(ax(1),ay(1),az(1),anglesize*anglabfact,1,-0.5*sigma)
+
 set parametric
 
 set urange [0:1]
@@ -85,8 +110,13 @@ set label 1 "{/Symbol w}" at 0,0,vec_ht tc rgb rotcol
 set label 2 "LoS"         at vec_ht*zx(1),vec_ht*zy(1),vec_ht*zz(1) tc rgb loscol
 set label 3 "{/Symbol m}" at vec_ht*ax(1),vec_ht*ay(1),vec_ht*az(1) tc rgb magcol
 set label 4 "{/Symbol a}" at lbl_ht*ax(0.5),lbl_ht*ay(0.5),lbl_ht*az(0.5) tc rgb alpcol
-set label 5 "{/Symbol z}" at lbl_ht*zx(0.5),lbl_ht*zy(0.5),lbl_ht*zz(0.5) tc rgb zetcol
-set label 6 "{/Symbol G}" at \
+set label 5 "{/Symbol b}" at lbl_ht*bx(0.5),lbl_ht*by(0.5),lbl_ht*bz(0.5) tc rgb alpcol
+set label 6 "{/Symbol z}" at lbl_ht*zx(0.5),lbl_ht*zy(0.5),lbl_ht*zz(0.5) tc rgb zetcol
+set label 7 "{/Symbol s}" at siglabx,siglaby,siglabz tc rgb angcol
+set label 8 "{/Symbol f}" at X(1,anglesize*anglabfact,0.5*phi), \
+                             Y(1,anglesize*anglabfact,0.5*phi), \
+                             Z(1,anglesize*anglabfact,0.5*phi) tc rgb angcol
+set label 9 "{/Symbol G}" at \
     lbl_ht*GCx(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, 0.5), \
     lbl_ht*GCy(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, 0.5), \
     lbl_ht*GCz(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, 0.5) tc rgb gamcol
@@ -100,4 +130,6 @@ splot zx(u),zy(u),zz(u) w l ls 1 lc rgb zetcol, \
       ax(u),ay(u),az(u) w l ls 1 lc rgb alpcol, \
       bx(u),by(u),bz(u) w l lt 0 lc rgb alpcol, \
       Gx(u),Gy(u),Gz(u) w l lc rgb gamcol, \
-      LoSx(u),LoSy(u),LoSz(u) lt 0 lc rgb loscol
+      LoSx(u),LoSy(u),LoSz(u) lt 0 lc rgb loscol, \
+      phix(u),phiy(u),phiz(u) lc rgb angcol, \
+      sigx(u),sigy(u),sigz(u) lc rgb angcol
