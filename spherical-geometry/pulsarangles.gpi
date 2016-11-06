@@ -1,0 +1,103 @@
+reset
+set object 1 rectangle from screen 0,0 to screen 1,1 fillcolor rgb "black" behind
+set view equal xyz
+
+loscol = "white"   # For line of sight
+magcol = "magenta" # For magnetic fields
+rotcol = "yellow"  # For rotation axes etc
+zetcol = "#c0ffc0" # For zeta
+alpcol = "#ffc0c0" # For alpha
+gamcol = "#c0c0ff" # For gamma
+
+# Angle manipulationn utility functions
+
+# r  = radius
+# th = polar angle
+# ph = azimuthal angle
+
+X(r, th, ph) = r * sin(th) * cos(ph)
+Y(r, th, ph) = r * sin(th) * sin(ph)
+Z(r, th, ph) = r * cos(th)
+
+deg2rad(th) = th*pi/180.0
+
+# Define great circles (GCs) parametrically
+# p = point 1
+# q = point 2
+# r = circle/spherical radius
+# u = parameter (from 0 to 1)
+GCx(px,py,pz,qx,qy,qz,r,u) = r*((1-u)*px+u*qx)/sqrt(((1-u)*px+u*qx)**2+((1-u)*py+u*qy)**2+((1-u)*pz+u*qz)**2)
+GCy(px,py,pz,qx,qy,qz,r,u) = r*((1-u)*py+u*qy)/sqrt(((1-u)*px+u*qx)**2+((1-u)*py+u*qy)**2+((1-u)*pz+u*qz)**2)
+GCz(px,py,pz,qx,qy,qz,r,u) = r*((1-u)*pz+u*qz)/sqrt(((1-u)*px+u*qx)**2+((1-u)*py+u*qy)**2+((1-u)*pz+u*qz)**2)
+
+# Define (co-)latitudal circles (LCs) around an arbitrary polar point parametrically
+# p = "polar" point
+# q = point that defines where to start drawing (co-planar with origin)
+# colat = colatitude of proposed
+# r = spherical radius (i.e. from origin)
+# u = parameter (from 0 to 1 for complete circle)
+LCx(px,py,pz,qx,qy,qz,colat,r,u) = u
+
+# For the pulsar geometry displayed, choose
+alpha = deg2rad(30) # Angle between rotation and magnetic axes
+zeta  = deg2rad(40) # Angle between rotation axis and line-of-sight
+phi   = deg2rad(45) # Rotation phase
+Gamma = acos(cos(alpha)*cos(zeta) + sin(alpha)*sin(zeta)*cos(phi))
+sigma = asin(sin(zeta)*sin(phi)/sin(Gamma))
+
+# (Set rotation axis aligned with z axis)
+# Line for angle zeta
+zx(u) = X(1,u*zeta,0)
+zy(u) = Y(1,u*zeta,0)
+zz(u) = Z(1,u*zeta,0)
+
+# Line for angle alpha
+ax(u) = X(1,u*alpha,phi)
+ay(u) = Y(1,u*alpha,phi)
+az(u) = Z(1,u*alpha,phi)
+
+# Line for anlge Gamma
+Gx(u) = GCx(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, u)
+Gy(u) = GCy(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, u)
+Gz(u) = GCz(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, u)
+
+# (Dashed) colatitude line for LoS
+LoSx(u) = X(1,zeta,(u*1.4-0.2)*phi)
+LoSy(u) = Y(1,zeta,(u*1.4-0.2)*phi)
+LoSz(u) = Z(1,zeta,(u*1.4-0.2)*phi)
+
+# (Dashed) longitude line for beta (= alpha extension)
+bx(u) = X(1,(zeta-alpha)*u+alpha,phi)
+by(u) = Y(1,(zeta-alpha)*u+alpha,phi)
+bz(u) = Z(1,(zeta-alpha)*u+alpha,phi)
+
+set parametric
+
+set urange [0:1]
+
+unset tics
+unset border
+unset key
+
+lbl_ht = 1.05
+vec_ht = 1.2
+set label 1 "{/Symbol w}" at 0,0,vec_ht tc rgb rotcol
+set label 2 "LoS"         at vec_ht*zx(1),vec_ht*zy(1),vec_ht*zz(1) tc rgb loscol
+set label 3 "{/Symbol m}" at vec_ht*ax(1),vec_ht*ay(1),vec_ht*az(1) tc rgb magcol
+set label 4 "{/Symbol a}" at lbl_ht*ax(0.5),lbl_ht*ay(0.5),lbl_ht*az(0.5) tc rgb alpcol
+set label 5 "{/Symbol z}" at lbl_ht*zx(0.5),lbl_ht*zy(0.5),lbl_ht*zz(0.5) tc rgb zetcol
+set label 6 "{/Symbol G}" at \
+    lbl_ht*GCx(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, 0.5), \
+    lbl_ht*GCy(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, 0.5), \
+    lbl_ht*GCz(ax(1), ay(1), az(1), zx(1), zy(1), zz(1), 1, 0.5) tc rgb gamcol
+
+arw_ht = 1.5
+set arrow 1 from 0,0,0 to 0,0,arw_ht lc rgb rotcol
+set arrow 2 from 0,0,0 to arw_ht*zx(1),arw_ht*zy(1),arw_ht*zz(1) lc rgb loscol
+set arrow 3 from 0,0,0 to arw_ht*ax(1),arw_ht*ay(1),arw_ht*az(1) lc rgb magcol
+
+splot zx(u),zy(u),zz(u) w l ls 1 lc rgb zetcol, \
+      ax(u),ay(u),az(u) w l ls 1 lc rgb alpcol, \
+      bx(u),by(u),bz(u) w l lt 0 lc rgb alpcol, \
+      Gx(u),Gy(u),Gz(u) w l lc rgb gamcol, \
+      LoSx(u),LoSy(u),LoSz(u) lt 0 lc rgb loscol
