@@ -1,5 +1,5 @@
 
-all: pulsar_carousel_reverse.gif pulsar_carousel_accel.gif
+all: pulsar_onebeam.gif
 
 %_palette.png: %.mpg
 	ffmpeg -y -i $< -vf fps=24,scale=320:-1:flags=lanczos,palettegen $@
