@@ -22,47 +22,46 @@ set samples 361, 361
 set urange [0:1] # Ranging over latitude
 set vrange [0:1] # Ranging over longitude
 
-set xrange [-2:2]
-set yrange [-2:2]
-set zrange [-2:2]
-set view 80.0, 60.0, 1.0, 1.0
+set xrange [-1.5:1.5]
+set yrange [-1.5:1.5]
+set zrange [-1:2]
+set view 70.0, 0.0, 1.0, 1.0
 set xyplane 0
 
-alpha = 30*180.0/pi
-zeta  = 45*180.0/pi
+alpha = 20*pi/180.0
+zeta  = 35*pi/180.0
 
 load 'geometry.gpi'
 heights = "1.2 1.4 1.6 1.8 2.0 2.2"
 colours = "magenta blue green yellow orange red"
 
 # First plot: 3D wireframe model of pulsar and emission sites at single height
-#do for [i=0:n] {
-#
-#    outfile = sprintf("3D-wireframe_%03d.png", i)
-#    set output outfile
-#    emissionheight = word(heights, 1)
-#    emissionpoints = sprintf("< head -%d %s", i, samplepoints)
-#
-#    splot magx(xx(sph_coord_th(u),sph_coord_ph(v),1), \
-#               yy(sph_coord_th(u),sph_coord_ph(v),1), \
-#               zz(sph_coord_th(u),sph_coord_ph(v),1), 0),  \
-#          magy(xx(sph_coord_th(u),sph_coord_ph(v),1), \
-#               yy(sph_coord_th(u),sph_coord_ph(v),1), \
-#               zz(sph_coord_th(u),sph_coord_ph(v),1), 0),  \
-#          magz(xx(sph_coord_th(u),sph_coord_ph(v),1), \
-#               yy(sph_coord_th(u),sph_coord_ph(v),1), \
-#               zz(sph_coord_th(u),sph_coord_ph(v),1), 0)  \
-#          lc rgb "white", \
-#          emissionpoints u (-LoSx($1*pi/180.0,emissionheight)):\
-#                           (-LoSy($1*pi/180.0,emissionheight)):\
-#                           (-LoSz($1*pi/180.0,emissionheight)) \
-#          pt 7 ps 1.5 lc rgb word(colours, 1)
-#
-#}
+do for [i=0:n] {
+
+    outfile = sprintf("3D-wireframe_%03d.png", i)
+    set output outfile
+    emissionheight = word(heights, 1)
+    emissionpoints = sprintf("< head -%d %s", i, samplepoints)
+
+    splot magx(xx(sph_coord_th(u),sph_coord_ph(v),1), \
+               yy(sph_coord_th(u),sph_coord_ph(v),1), \
+               zz(sph_coord_th(u),sph_coord_ph(v),1), 0),  \
+          magy(xx(sph_coord_th(u),sph_coord_ph(v),1), \
+               yy(sph_coord_th(u),sph_coord_ph(v),1), \
+               zz(sph_coord_th(u),sph_coord_ph(v),1), 0),  \
+          magz(xx(sph_coord_th(u),sph_coord_ph(v),1), \
+               yy(sph_coord_th(u),sph_coord_ph(v),1), \
+               zz(sph_coord_th(u),sph_coord_ph(v),1), 0)  \
+          lc rgb "white", \
+          emissionpoints u (LoSx($1*pi/180.0,emissionheight)):\
+                           (LoSy($1*pi/180.0,emissionheight)):\
+                           (LoSz($1*pi/180.0,emissionheight)) \
+          pt 7 ps 1.5 lc rgb word(colours, 1)
+
+}
 
 # Second plot: 3D wireframe model of pulsar and emission sites at multiple heights
 do for [i=1:words(heights)] {
-
     outfile = sprintf("3D-heights_%03d.png", i-1)
     set output outfile
     emissionheight = word(heights, i)
@@ -77,10 +76,10 @@ do for [i=1:words(heights)] {
                yy(sph_coord_th(u),sph_coord_ph(v),1), \
                zz(sph_coord_th(u),sph_coord_ph(v),1), 0)  \
           lc rgb "white", \
-          samplepoints u (-LoSx($1*pi/180.0,emissionheight)):\
-                         (-LoSy($1*pi/180.0,emissionheight)):\
-                         (-LoSz($1*pi/180.0,emissionheight)) \
-          pt 7 ps 1.5 lc rgb word(colours, i)
+          for [j=1:i] samplepoints u (LoSx($1*pi/180.0,word(heights, j))):\
+                                     (LoSy($1*pi/180.0,word(heights, j))):\
+                                     (LoSz($1*pi/180.0,word(heights, j))) \
+          pt 7 ps 1.5 lc rgb word(colours, j)
 
 }
 
