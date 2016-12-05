@@ -1,0 +1,19 @@
+set terminal pngcairo enhanced size 1200,600 font ",20"
+
+set output "binned_timeseries.png"
+
+set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black"
+unset border
+
+unset tics
+unset key
+
+set style fill solid border lc rgb "white"
+
+set xlabel "Time" tc rgb "white"
+
+singlepulse = "singlepulse.dat"
+
+set xrange [400:624]
+
+plot singlepulse with boxes lc rgb "black"
