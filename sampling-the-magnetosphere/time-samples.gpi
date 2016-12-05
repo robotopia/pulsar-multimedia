@@ -1,4 +1,4 @@
-set terminal pngcairo enhanced size 600,600
+set terminal pngcairo enhanced size 1200,600 font ",20"
 
 set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black"
 
@@ -38,7 +38,7 @@ colours = "magenta blue green yellow orange red"
 # First plot: 3D wireframe model of pulsar and emission sites at single height
 do for [i=0:n] {
 
-    outfile = sprintf("3D-wireframe_%03d.png", i)
+    outfile = sprintf("3D-sampledpulse_%03d.png", i)
     set output outfile
     emissionheight = word(heights, 1)
     emissionpoints = sprintf("< head -%d %s", i, samplepoints)
@@ -53,9 +53,9 @@ do for [i=0:n] {
                yy(sph_coord_th(u),sph_coord_ph(v),1), \
                zz(sph_coord_th(u),sph_coord_ph(v),1), 0)  \
           lc rgb "white", \
-          emissionpoints u (LoSx($1*pi/180.0,emissionheight)):\
-                           (LoSy($1*pi/180.0,emissionheight)):\
-                           (LoSz($1*pi/180.0,emissionheight)) \
+          emissionpoints u (LoSx($1*pi/180.0+pi/2,emissionheight)):\
+                           (LoSy($1*pi/180.0+pi/2,emissionheight)):\
+                           (LoSz($1*pi/180.0+pi/2,emissionheight)) \
           pt 7 ps 1.5 lc rgb word(colours, 1)
 
 }
@@ -85,8 +85,29 @@ do for [i=1:words(heights)] {
 
 # Third plot: Timeseries
 
-#set border lc rgb "white"
-#set xlabel "1 pulsar rotation" tc rgb "white"
+set border lc rgb "white"
+set xlabel "1 pulsar rotation" tc rgb "white"
+set xrange [*:*] noextend
+set yrange [*:*] noextend
 
-#plot singlepulse  u ($0*360.0/N):1 w l lc rgb "white", \
-#     samplepoints w p pt 7 ps 2 lc rgb "red"
+do for [i=0:n] {
+    outfile = sprintf("2D-sampledpulse_%03d.png", i)
+    set output outfile
+    plot singlepulse u ($0*360.0/N):1 w l lc rgb "white", \
+         "< head -".i." ".samplepoints w p pt 7 ps 2 lc rgb word(colours, 1)
+}
+
+set border lc rgb "white"
+set xlabel "1 pulsar rotation" tc rgb "white"
+set ylabel "Observing Frequency" tc rgb "white"
+set xrange [*:*]
+set yrange [1:words(heights)]
+set zrange [*:*]
+set view noequal
+set view 73, 309, 1, 1
+do for [i=1:words(heights)] {
+    outfile = sprintf("2D-heights_%03d.png", i-1)
+    set output outfile
+    splot for [j=1:i] singlepulse  u ($0*360.0/N):(j):($1*(1-0.1*j)) w l lc rgb "white", \
+          for [j=1:i] samplepoints u 1:(j):($2*(1-0.1*j)) pt 7 ps 2 lc rgb word(colours, j)
+}
