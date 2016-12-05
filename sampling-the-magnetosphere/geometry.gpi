@@ -1,0 +1,37 @@
+colat = 15*180.0/pi
+
+xx(th, ph) = sin(th) * cos(ph)
+yy(th, ph) = sin(th) * sin(ph)
+zz(th, ph) = cos(th)
+
+# Rotation to get from observer to magnetic frame:
+magx(x,y,z,phi) = cos(phi)*cos(alpha)*x - sin(phi)*y + cos(phi)*sin(alpha)*z
+magy(x,y,z,phi) = sin(phi)*cos(alpha)*x + cos(phi)*y + sin(phi)*sin(alpha)*z
+magz(x,y,z,phi) =         -sin(alpha)*x              +          cos(alpha)*z
+
+# and vice versa
+obsx(x,y,z,phi) =  cos(phi)*cos(alpha)*x + sin(phi)*cos(alpha)*y - sin(alpha)*z
+obsy(x,y,z,phi) = -sin(phi)           *x + cos(phi)           *y
+obsz(x,y,z,phi) =  cos(phi)*sin(alpha)*x + sin(phi)*sin(alpha)*y + cos(alpha)*z
+
+sphdist(colat1,colat2,dphi) = acos(cos(colat1)*cos(colat2) + sin(colat1)*sin(colat2)*cos(dphi))
+Gamma(zeta,phi)    = sphdist(alpha,zeta,phi)
+sigma(zeta,phi)    = atan2(sin(zeta)*sin(phi), sin(alpha)*cos(zeta) - cos(alpha)*sin(zeta)*cos(phi)) + pi
+tau(zeta,phi)      = acos((cos(Gamma(zeta,phi))*sqrt(8.0+cos(Gamma(zeta,phi))**2) - sin(Gamma(zeta,phi))**2)/3.0)/2.0
+
+round(x) = floor(x+0.5)
+
+carouselx(th,ph)   = magx(xx(th,ph),yy(th,ph),zz(th,ph),0)
+carousely(th,ph)   = magy(xx(th,ph),yy(th,ph),zz(th,ph),0)
+carouselz(th,ph)   = magz(xx(th,ph),yy(th,ph),zz(th,ph),0)
+
+csl_region_th(u) = 5*FWHM*(u-0.5) + colat
+csl_region_ph(v) = 2*pi*v
+
+sph_coord_th(u)  =   pi*u
+sph_coord_ph(v)  = 2*pi*v
+
+LoSx(phi) = magx(xx(tau(zeta,phi),sigma(zeta,phi)),yy(tau(zeta,phi),sigma(zeta,phi)),zz(tau(zeta,phi),sigma(zeta,phi)),0)
+LoSy(phi) = magy(xx(tau(zeta,phi),sigma(zeta,phi)),yy(tau(zeta,phi),sigma(zeta,phi)),zz(tau(zeta,phi),sigma(zeta,phi)),0)
+LoSz(phi) = magz(xx(tau(zeta,phi),sigma(zeta,phi)),yy(tau(zeta,phi),sigma(zeta,phi)),zz(tau(zeta,phi),sigma(zeta,phi)),0)
+

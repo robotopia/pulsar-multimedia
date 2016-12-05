@@ -1,0 +1,55 @@
+set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black"
+
+singlepulse  = "singlepulse.dat"
+samplepoints = "singlepulse-sampled.dat"
+
+unset xtics
+unset ytics
+
+unset key
+unset border
+
+N = system("cat ".singlepulse." | wc -l")
+
+set view equal xyz
+
+set parametric
+set isosamples 17, 17
+set samples 361, 361
+set urange [0:1] # Ranging over latitude
+set vrange [0:1] # Ranging over longitude
+
+set xrange [-1:1]
+set yrange [-1:1]
+set zrange [-1:2]
+set view 80.0, 60.0, 1.0, 1.0
+set xyplane 0
+
+alpha = 30*180.0/pi
+zeta  = 45*180.0/pi
+
+load 'geometry.gpi'
+
+#set multiplot layout 2,1
+
+# Top plot: 3D wireframe model of pulsar and emission sites
+splot magx(xx(sph_coord_th(u),sph_coord_ph(v)), \
+           yy(sph_coord_th(u),sph_coord_ph(v)), \
+           zz(sph_coord_th(u),sph_coord_ph(v)), 0),  \
+      magy(xx(sph_coord_th(u),sph_coord_ph(v)), \
+           yy(sph_coord_th(u),sph_coord_ph(v)), \
+           zz(sph_coord_th(u),sph_coord_ph(v)), 0),  \
+      magz(xx(sph_coord_th(u),sph_coord_ph(v)), \
+           yy(sph_coord_th(u),sph_coord_ph(v)), \
+           zz(sph_coord_th(u),sph_coord_ph(v)), 0)  \
+      lc rgb "white"
+
+# Bottom plot: Timeseries
+
+#set border lc rgb "white"
+#set xlabel "1 pulsar rotation" tc rgb "white"
+
+#plot singlepulse  u ($0*360.0/N):1 w l lc rgb "white", \
+#     samplepoints w p pt 7 ps 2 lc rgb "red"
+
+#unset multiplot
