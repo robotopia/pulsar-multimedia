@@ -1,0 +1,20 @@
+set terminal pngcairo enhanced size 1200,600 font ",20"
+set output "spectrum.png"
+
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+
+unset key
+set border lc rgb "white"
+unset ytics
+set xtics ( "11 MHz" 11, "100 MHz" 100, "1 GHz" 1e3, "5 GHz" 5e3 ) tc rgb "white"
+set xlabel "Frequency" tc rgb "white"
+set ylabel "log(S)  (arbitrary units)" tc rgb "white"
+
+S(f,idx) = f**idx
+turnover(f,peak) = 1/f**2 * exp(-2*peak/f)
+
+set logscale xy
+set xrange [11:5e3]
+set yrange [turnover(5e3, 20.0)/2:turnover(20.0, 20.0)*2]
+
+plot turnover(x, 20.0) lw 2 lc rgb "yellow"

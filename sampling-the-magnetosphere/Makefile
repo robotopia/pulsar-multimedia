@@ -32,7 +32,7 @@ SAMPLEDPULSE = sampledpulse_000.png \
                sampledpulse_022.png \
                sampledpulse_023.png
 
-all: heights.gif sampledpulse.gif binned_timeseries.png
+all: heights.gif sampledpulse.gif binned_timeseries.png spectrum.png
 
 heights.gif: $(HEIGHTS)
 	convert -delay 100 $^ $@
@@ -55,4 +55,7 @@ singlepulse-sampled.dat: singlepulse.dat downsamp.var
 	awk 'BEGIN {downsamp = '$$DOWNSAMP'; n = 0; nlines = '$$NLINES'; d = nlines / downsamp} {if ((NR-d/2)/d > n) {print 360*NR/nlines, $$1; n++}}' < $< > $@
 
 binned_timeseries.png: binned_timeseries.gpi
+	gnuplot $< > $@
+
+spectrum.png: spectrum.gpi
 	gnuplot $< > $@
