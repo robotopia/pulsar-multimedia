@@ -1,8 +1,8 @@
 colat = 15*180.0/pi
 
-xx(th, ph) = sin(th) * cos(ph)
-yy(th, ph) = sin(th) * sin(ph)
-zz(th, ph) = cos(th)
+xx(th, ph, r) = r * sin(th) * cos(ph)
+yy(th, ph, r) = r * sin(th) * sin(ph)
+zz(th, ph, r) = r * cos(th)
 
 # Rotation to get from observer to magnetic frame:
 magx(x,y,z,phi) = cos(phi)*cos(alpha)*x - sin(phi)*y + cos(phi)*sin(alpha)*z
@@ -21,9 +21,9 @@ tau(zeta,phi)      = acos((cos(Gamma(zeta,phi))*sqrt(8.0+cos(Gamma(zeta,phi))**2
 
 round(x) = floor(x+0.5)
 
-carouselx(th,ph)   = magx(xx(th,ph),yy(th,ph),zz(th,ph),0)
-carousely(th,ph)   = magy(xx(th,ph),yy(th,ph),zz(th,ph),0)
-carouselz(th,ph)   = magz(xx(th,ph),yy(th,ph),zz(th,ph),0)
+carouselx(th,ph)   = magx(xx(th,ph,1),yy(th,ph,1),zz(th,ph,1),0)
+carousely(th,ph)   = magy(xx(th,ph,1),yy(th,ph,1),zz(th,ph,1),0)
+carouselz(th,ph)   = magz(xx(th,ph,1),yy(th,ph,1),zz(th,ph,1),0)
 
 csl_region_th(u) = 5*FWHM*(u-0.5) + colat
 csl_region_ph(v) = 2*pi*v
@@ -31,7 +31,15 @@ csl_region_ph(v) = 2*pi*v
 sph_coord_th(u)  =   pi*u
 sph_coord_ph(v)  = 2*pi*v
 
-LoSx(phi) = magx(xx(tau(zeta,phi),sigma(zeta,phi)),yy(tau(zeta,phi),sigma(zeta,phi)),zz(tau(zeta,phi),sigma(zeta,phi)),0)
-LoSy(phi) = magy(xx(tau(zeta,phi),sigma(zeta,phi)),yy(tau(zeta,phi),sigma(zeta,phi)),zz(tau(zeta,phi),sigma(zeta,phi)),0)
-LoSz(phi) = magz(xx(tau(zeta,phi),sigma(zeta,phi)),yy(tau(zeta,phi),sigma(zeta,phi)),zz(tau(zeta,phi),sigma(zeta,phi)),0)
+newtau(oldtau,r) = asin(sqrt(r) * sin(oldtau)) # Moves along magnetic field line to radius r
+
+LoSx(phi,r) = magx(xx(newtau(tau(zeta,phi),r),sigma(zeta,phi),r), \
+                   yy(newtau(tau(zeta,phi),r),sigma(zeta,phi),r), \
+                   zz(newtau(tau(zeta,phi),r),sigma(zeta,phi),r),0)
+LoSy(phi,r) = magy(xx(newtau(tau(zeta,phi),r),sigma(zeta,phi),r), \
+                   yy(newtau(tau(zeta,phi),r),sigma(zeta,phi),r), \
+                   zz(newtau(tau(zeta,phi),r),sigma(zeta,phi),r),0)
+LoSz(phi,r) = magz(xx(newtau(tau(zeta,phi),r),sigma(zeta,phi),r), \
+                   yy(newtau(tau(zeta,phi),r),sigma(zeta,phi),r), \
+                   zz(newtau(tau(zeta,phi),r),sigma(zeta,phi),r),0)
 
