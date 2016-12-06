@@ -1,0 +1,51 @@
+#set terminal pngcairo enhanced size 1200,600 font ",20"
+#set output "phasespace.png"
+
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+
+set style line 1 pt 7 ps 2 lc rgb "red"
+unset key
+set logscale xy
+set grid
+set border lc rgb "white"
+
+Txlo = 0.5
+Txhi = 2e3
+Tylo = 0.5/3600.0
+Tyhi = 48.0
+
+Fxlo = 0.5
+Fxhi = 2e3
+Fylo = 0.5
+Fyhi = 2e4
+
+set multiplot layout 1,2
+
+# Plot time resolution vs time range
+set xrange [Txlo:Txhi]
+set yrange [Tylo:Tyhi]
+
+set ytics ("1 sec" 1.0/3600.0, "1 min" 1.0/60.0, "1 hr" 1, "1 day" 24)
+
+set xlabel "Time resolution (Hz)" tc rgb "white"
+set ylabel "Time range" tc rgb "white"
+
+plot '-' ls 1
+  1e3 24
+  e
+
+# Plot frequency resolution vs frequency range
+unset object 1
+set xrange [Fxhi:Fxlo]
+set yrange [Fylo:Fyhi]
+
+unset ytics; set ytics # Reset to auto-tics
+
+set xlabel "Frequency resolution (MHz)" tc rgb "white"
+set ylabel "Frequency range (MHz)" tc rgb "white"
+
+plot '-' ls 1
+  1.28 1e4
+  e
+
+unset multiplot
