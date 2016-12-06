@@ -59,3 +59,7 @@ binned_timeseries.png: binned_timeseries.gpi
 
 spectrum.png: spectrum.gpi
 	gnuplot $< > $@
+
+polarisation.png:
+	download_attachment.rb B0031-07_prof.pdf
+	convert B0031-07_prof.pdf $@
