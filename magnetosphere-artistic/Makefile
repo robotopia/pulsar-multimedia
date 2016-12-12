@@ -1,4 +1,4 @@
-all: dipole-radiation-carousel.gif
+all: dipole-radiation-3stages.gif dipole-radiation-carousel.gif dipole_radiation.gif dipole-radiation-temperature.gif
 
 %_palette.png: %.mpg
 	ffmpeg -y -i $< -vf fps=24,scale=320:-1:flags=lanczos,palettegen $@

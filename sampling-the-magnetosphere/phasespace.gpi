@@ -1,5 +1,4 @@
 #set terminal pngcairo enhanced size 1200,600 font ",20"
-#set output "phasespace.png"
 
 set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
 
@@ -10,7 +9,7 @@ set grid
 set border lc rgb "white"
 
 Txlo = 0.5
-Txhi = 2e3
+Txhi = 2e6
 Tylo = 0.5/3600.0
 Tyhi = 48.0
 
@@ -19,33 +18,58 @@ Fxhi = 2e3
 Fylo = 0.5
 Fyhi = 2e4
 
-set multiplot layout 1,2
+plots = "empty slow msps drift"
+#do for [i=1:words(plots)] {
+i=4
 
-# Plot time resolution vs time range
-set xrange [Txlo:Txhi]
-set yrange [Tylo:Tyhi]
+    plottype = word(plots, i)
+    outfile = "phasespace_".plottype.".png"
 
-set ytics ("1 sec" 1.0/3600.0, "1 min" 1.0/60.0, "1 hr" 1, "1 day" 24)
+    set multiplot layout 1,2
 
-set xlabel "Time resolution (Hz)" tc rgb "white"
-set ylabel "Time range" tc rgb "white"
+    # Plot time resolution vs time range
+    set yrange [Tylo:Tyhi]
 
-plot '-' ls 1
-  1e3 24
-  e
+    set xtics ("1 Hz" 1, "1 kHz" 1e3, "1 MHz" 1e6)
+    set ytics ("1 sec" 1.0/3600.0, "1 min" 1.0/60.0, "1 hr" 1, "1 day" 24)
 
-# Plot frequency resolution vs frequency range
-unset object 1
-set xrange [Fxhi:Fxlo]
-set yrange [Fylo:Fyhi]
+    set xlabel "Time resolution" tc rgb "white"
+    set ylabel "Time range" tc rgb "white"
 
-unset ytics; set ytics # Reset to auto-tics
+    if (plottype eq "empty") {
+        plot [Txlo:Txhi] 1/0
+    }
+    if (plottype eq "slow") {
+        set label 1 "Ordinary pulsars" at 30,0.1 tc rgb "white" center
+        plot [Txlo:Txhi] 1/0, \
+             [1e3:Txhi] Tyhi with filledcurves x1 lt 3 lc rgb "yellow" fs pattern 4
+    }
+    if (plottype eq "msps") {
+        set label 1 "Millisecond pulsars" at 30,0.1 tc rgb "white" center
+        plot [Txlo:Txhi] 1/0, \
+             [1e6:Txhi] Tyhi with filledcurves x1 lt 3 lc rgb "green" fs pattern 4
+    }
+    if (plottype eq "drift") {
+        set label 1 "Drifting" at 1e3,2.24/3600.0 tc rgb "white" center
+        plot [Txlo:Txhi] 1/0, \
+             10.0/3600.0 with filledcurves x2 lt 3 lc rgb "orange" fs pattern 4
+    }
 
-set xlabel "Frequency resolution (MHz)" tc rgb "white"
-set ylabel "Frequency range (MHz)" tc rgb "white"
+    # Plot frequency resolution vs frequency range
+    unset object 1
+    set xrange [Fxhi:Fxlo]
+    set yrange [Fylo:Fyhi]
 
-plot '-' ls 1
-  1.28 1e4
-  e
+    unset xtics; set xtics # Reset to auto-tics
+    unset ytics; set ytics # Reset to auto-tics
 
-unset multiplot
+    set xlabel "Frequency resolution (MHz)" tc rgb "white"
+    set ylabel "Frequency range (MHz)" tc rgb "white"
+
+    if (plottype eq "empty" || plottype eq "slow" || plottype eq "msps" || plottype eq "drift") {
+        plot 1/0
+    }
+
+    unset multiplot
+
+#}

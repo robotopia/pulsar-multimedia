@@ -1,5 +1,5 @@
-set terminal pngcairo enhanced size 1200,600 font ",20"
-set output "spectrum.png"
+#set terminal pngcairo enhanced size 1200,600 font ",20"
+#set output "spectrum.png"
 
 set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
 
@@ -13,6 +13,8 @@ set ylabel "log(S)  (arbitrary units)" tc rgb "white"
 S(f,idx) = f**idx
 turnover(f,peak) = 1/f**2 * exp(-2*peak/f)
 
+#set parametric
+#set samples 1000
 set logscale xy
 set xrange [11:5e3]
 set yrange [turnover(5e3, 20.0)/2:turnover(20.0, 20.0)*2]
