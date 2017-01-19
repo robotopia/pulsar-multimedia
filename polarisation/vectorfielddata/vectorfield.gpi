@@ -1,0 +1,31 @@
+set terminal pngcairo enhanced size 600,600 background rgb "black"
+
+nframes  = arg1
+basename = arg2
+
+set xyplane 0
+set size ratio -1
+
+set ls 1 lc rgb "white"
+set ls 2 lc rgb "yellow"
+set border 4095 ls 1
+
+unset key
+unset tics
+
+set xrange [0.5:10.5]
+set yrange [0.5:10.5]
+set zrange [0.5:10.5]
+
+do for [frame=1:nframes] {
+
+    infile  = sprintf("%s%03d.dat", basename, frame)
+    outfile = sprintf("%s%03d.png", basename, frame)
+    set output outfile
+
+    rotangle = 1.0*frame/nframes * 90 + 10
+    set view ,rotangle
+
+    splot infile with vectors ls 2
+
+}
