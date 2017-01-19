@@ -1,0 +1,39 @@
+set terminal pngcairo enhanced size 600,600 background rgb "black"
+
+nframes  = arg1
+basename = arg2
+
+set xyplane 0
+set size ratio -1
+set view 60,120
+
+set ls 1 lc rgb "white"
+set ls 2 lc rgb "yellow"
+set ls 3 lw 2 lc rgb "white"
+set border 4095 ls 1
+
+unset key
+unset tics
+
+set xrange [0.5:10.5]
+set yrange [0.5:10.5]
+set zrange [0.5:10.5]
+
+set palette model HSV
+set palette rgb 3,2,2 maxcolors nframes
+set cbrange [0:1]
+unset colorbox
+
+# Poynting arrow
+set arrow 1 from 11,2,0 to 11,8,0 ls 3
+set label 1 "Poynting vector" at 12,5,0 center rotate by -15 tc rgb "white"
+
+do for [frame=1:nframes] {
+
+    infile  = sprintf("%s%03d.dat", basename, frame)
+    outfile = sprintf("%s%03d.png", basename, frame)
+    set output outfile
+
+    splot infile with vectors nohead lc palette
+
+}
