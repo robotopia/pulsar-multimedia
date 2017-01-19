@@ -37,10 +37,18 @@ for frame = 1:nframes
 
     % Prepare the output matrix
     output = [X,Y,Z,dx,dy,dz];
+    format = '%d %d %d %f %f %f\n';
+
+    % If there is an extra (colour) field, print it out as the 7th column
+    if (S(4) > 3)
+        colour = vf(:,:,:,4,frame)(:);
+        output = [output, colour];
+        format = '%d %d %d %f %f %f %f\n';
+    end % if
 
     % Write to file
     f = fopen(outfile, 'w');
-    fprintf(f, '%d %d %d %f %f %f\n', output');
+    fprintf(f, format, output');
     fclose(f);
 
 end % for
