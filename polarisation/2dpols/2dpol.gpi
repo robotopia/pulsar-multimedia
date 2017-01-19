@@ -1,0 +1,36 @@
+set terminal pngcairo enhanced size 600,600 background rgb "black"
+
+set ls 1 lc rgb "white"
+set ls 2 pt 7 ps 1.0 lc rgb "yellow"
+
+unset border
+unset key
+unset tics
+
+basename = arg1
+nframes  = arg2
+phi = arg3*pi/180 # polarisation angle
+chi = arg4*pi/180 # "eccentricity"
+
+Px(phi,chi,phase) = cos(phi)*cos(phase) - tan(chi)*sin(phi)*sin(phase)
+Py(phi,chi,phase) = sin(phi)*cos(phase) + tan(chi)*cos(phi)*sin(phase)
+
+set parametric
+set trange [0:2*pi]
+set samples nframes
+
+set xrange [-1:1]
+set yrange [-1:1]
+set size ratio -1
+
+do for [frame=1:nframes] {
+
+    T = 2.0*pi*frame/nframes
+
+    outfile = sprintf("%s%03d.png", basename, frame)
+    set output outfile
+    
+    set arrow 1 from 0,0 to Px(phi,chi,T),Py(phi,chi,T) ls 1
+    plot Px(phi,chi,T),Py(phi,chi,T) with points ls 2
+
+}

@@ -6,7 +6,7 @@ NFRAMES = $(shell cat nframes)
 
 default: pwy.gif
 
-all: vf.gif  pwx.gif  pwy.gif
+all: vf.gif  pwx.gif  pwy.gif pwc.gif
 
 # RANDOM VECTOR FIELD
 
@@ -23,6 +23,7 @@ vf.dat: randomfield.m  nframes  writevf.m
 
 # PLANE WAVES
 
+# LINEAR X
 pwx.gif: pwx.png
 	convert -loop 0 -delay 5 $(basename $<)???$(suffix $<) $@
 
@@ -34,6 +35,7 @@ pwx.dat: planewavex.m  nframes  writevf.m
 	$(OCTAVE) $< $(NFRAMES) $(basename $@)
 	touch $@
 
+# LINEAR Y
 pwy.gif: pwy.png
 	convert -loop 0 -delay 5 $(basename $<)???$(suffix $<) $@
 
@@ -45,10 +47,22 @@ pwy.dat: planewavey.m  nframes  writevf.m
 	$(OCTAVE) $< $(NFRAMES) $(basename $@)
 	touch $@
 
+# CIRCULAR
+pwc.gif: pwc.png
+	convert -loop 0 -delay 5 $(basename $<)???$(suffix $<) $@
+
+pwc.png: planewave.gpi  pwc.dat  nframes
+	$(GNUPLOT) -e "arg1 = $(NFRAMES); arg2 = \"$(basename $@)\";" $<
+	touch $@
+
+pwc.dat: planewavec.m  nframes  writevf.m
+	$(OCTAVE) $< $(NFRAMES) $(basename $@)
+	touch $@
+
 # CLEAN DIRECTORY
 
 clean:
 	$(RM) *.gif *.png *.dat
 
 clean-stills:
-	$(RM) *.png
+	$(RM) *[0-9][0-9][0-9].png *[0-9][0-9][0-9].dat
