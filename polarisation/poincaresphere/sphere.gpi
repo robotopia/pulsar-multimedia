@@ -1,0 +1,36 @@
+reset
+
+set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black"
+
+unset border
+unset key
+unset tics
+
+Sx(phi,chi) = cos(2*chi)*cos(2*phi)
+Sy(phi,chi) = cos(2*chi)*sin(2*phi)
+Sz(phi,chi) = sin(2*chi)
+
+set parametric
+set trange [0:2*pi]
+
+set xrange [-1:1]
+set yrange [-1:1]
+set zrange [-1:1]
+set xyplane 0
+
+set urange [0:pi]
+set vrange [-pi/2:pi/2]
+
+set isosamples 33
+
+set view 60,110
+unset colorbox
+set hidden3d front
+set view equal xyz
+
+set arrow 1 from 0,0,0 to 2.4,0,0 lc rgb "white"
+set arrow 2 from 0,0,0 to 0,1.5,0 lc rgb "white"
+set arrow 3 from 0,0,0 to 0,0,1.7 lc rgb "white"
+set arrow 4 from 0,0,0 to Sx(phi,chi),Sy(phi,chi),Sz(phi,chi) lw 2 lc rgb "yellow"
+splot Sx(u,v),Sy(u,v),Sz(u,v) lc rgb "white", \
+      Sx(phi,chi),Sy(phi,chi),Sz(phi,chi) with points pt 7 ps 1.2 lc rgb "red"

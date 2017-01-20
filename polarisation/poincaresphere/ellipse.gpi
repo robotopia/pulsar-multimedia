@@ -1,0 +1,20 @@
+reset
+
+set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black"
+
+unset border
+unset key
+unset tics
+
+Px(phi,chi,phase) = cos(phi)*cos(phase) - tan(chi)*sin(phi)*sin(phase)
+Py(phi,chi,phase) = sin(phi)*cos(phase) + tan(chi)*cos(phi)*sin(phase)
+
+set parametric
+set trange [0:2*pi]
+set samples 360
+
+set xrange [-1:1]
+set yrange [-1:1]
+set size ratio -1
+
+plot Px(phi,chi,t),Py(phi,chi,t) with lines lw 2 lc rgb "yellow"
