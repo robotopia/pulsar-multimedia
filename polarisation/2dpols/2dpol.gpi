@@ -1,7 +1,9 @@
 set terminal pngcairo enhanced size 600,600 background rgb "black"
 
 set ls 1 lc rgb "white"
+set ls 4 lw 2 lc rgb "white"
 set ls 2 pt 7 ps 1.0 lc rgb "yellow"
+set ls 3 lw 2 lt 0 lc rgb "white"
 set palette defined ( 0 "yellow", 1 "black" )
 
 unset border
@@ -34,7 +36,11 @@ do for [frame=1:nframes] {
     outfile = sprintf("%s%03d.png", basename, frame)
     set output outfile
     
-    set arrow 1 from 0,0 to Px(phi,chi,T),Py(phi,chi,T) ls 1
+    set arrow 1 from 0,0 to Px(phi,chi,T),Py(phi,chi,T) ls 4
+    set arrow 2 from Px(phi,chi,T),0 to Px(phi,chi,T),Py(phi,chi,T) nohead ls 3
+    set arrow 3 from 0,Py(phi,chi,T) to Px(phi,chi,T),Py(phi,chi,T) nohead ls 3
+    set arrow 4 from 0,0 to 0,Py(phi,chi,T) ls 1
+    set arrow 5 from 0,0 to Px(phi,chi,T),0 ls 1
     splot Px(phi,chi,T+u),Py(phi,chi,T+u),-u/(2*pi) with lines lw 2 lc palette
 
 }

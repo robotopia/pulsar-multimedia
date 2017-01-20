@@ -1,13 +1,13 @@
 NFRAMES = $(shell cat nframes)
 GNUPLOT = gnuplot
 
-all: rotate.gif
+all: rotate.gif swap.gif
 
 %.gif: %.png
 	convert -loop 0 -delay 3 $(basename $<)???$(suffix $<) $@
 	@$(MAKE) --no-print-directory clean-still
 
-rotate.png: rotate.gpi nframes
+%.png: %.gpi nframes joined.gpi ellipse.gpi sphere.gpi
 	$(GNUPLOT) -e "arg1 = \"$(basename $@)\"; arg2 = $(NFRAMES);" $< > $@
 
 clean-still:

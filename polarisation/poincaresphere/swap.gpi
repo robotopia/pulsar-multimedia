@@ -3,10 +3,10 @@ set terminal pngcairo enhanced size 1000,500
 basename = arg1
 nframes  = arg2
 
-chi = 20*pi/180;
+phi = 45*pi/180;
 do for [frame=1:nframes] {
 
-    phi = 2*pi*frame/nframes
+    chi = sin(2*pi*frame/nframes)*pi/4
 
     outfile = sprintf("%s%03d.png", basename, frame)
     set output outfile
