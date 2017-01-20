@@ -2,10 +2,12 @@ set terminal pngcairo enhanced size 600,600 background rgb "black"
 
 set ls 1 lc rgb "white"
 set ls 2 pt 7 ps 1.0 lc rgb "yellow"
+set palette defined ( 0 "yellow", 1 "black" )
 
 unset border
 unset key
 unset tics
+unset colorbox
 
 basename = arg1
 nframes  = arg2
@@ -16,12 +18,14 @@ Px(phi,chi,phase) = cos(phi)*cos(phase) - tan(chi)*sin(phi)*sin(phase)
 Py(phi,chi,phase) = sin(phi)*cos(phase) + tan(chi)*cos(phi)*sin(phase)
 
 set parametric
-set trange [0:2*pi]
+set urange [0:2*pi]
 set samples nframes
 
 set xrange [-1:1]
 set yrange [-1:1]
 set size ratio -1
+
+set pm3d map
 
 do for [frame=1:nframes] {
 
@@ -31,6 +35,6 @@ do for [frame=1:nframes] {
     set output outfile
     
     set arrow 1 from 0,0 to Px(phi,chi,T),Py(phi,chi,T) ls 1
-    plot Px(phi,chi,T),Py(phi,chi,T) with points ls 2
+    splot Px(phi,chi,T+u),Py(phi,chi,T+u),-u/(2*pi) with lines lw 2 lc palette
 
 }
