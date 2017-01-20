@@ -1,7 +1,10 @@
 NFRAMES = $(shell cat nframes)
 GNUPLOT = gnuplot
 
-all: rotate.gif swap.gif
+all: rotate.gif swap.gif spheremap.png
+
+spheremap.png: spheremap.gpi
+	$(GNUPLOT) -e "arg1 = \"$@\";" $<
 
 %.gif: %.png
 	convert -loop 0 -delay 3 $(basename $<)???$(suffix $<) $@

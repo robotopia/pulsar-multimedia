@@ -1,0 +1,45 @@
+set terminal pngcairo enhanced size 600,600 background rgb "black"
+
+outfile = arg1
+set output outfile
+
+unset border
+unset key
+unset tics
+
+Sx(phi,chi) = cos(2*chi)*cos(2*phi)
+Sy(phi,chi) = cos(2*chi)*sin(2*phi)
+Sz(phi,chi) = sin(2*chi)
+
+set parametric
+set trange [0:2*pi]
+
+set xrange [-1:1]
+set yrange [-1:1]
+set zrange [-1:1]
+set xyplane 0
+
+set urange [0:pi]
+set vrange [-pi/2:pi/2]
+
+set isosamples 33
+
+set view 60,110
+unset colorbox
+set hidden3d front
+set view equal xyz
+
+set arrow 1 from 0,0,0 to 2.4,0,0 lc rgb "white"
+set arrow 2 from 0,0,0 to 0,1.5,0 lc rgb "white"
+set arrow 3 from 0,0,0 to 0,0,1.7 lc rgb "white"
+
+set arrow 4 from 0,0.5,1.7 to 0,0,1  front        lw 2 lc rgb "red"
+set arrow 5 from 0,0,-1.4  to 0,0,-1.16 front nohead lw 2 lc rgb "red"
+
+set label 1 "Right Circular" at 0,0.1,1.7 left   tc rgb "white"
+set label 2  "Left Circular" at 0,0,-1.5  center tc rgb "white"
+set label 3         "Linear" at 0,1.4,0.2 center tc rgb "white"
+
+splot Sx(u,v),Sy(u,v),Sz(u,v) lc rgb "white", \
+      Sx(u,0),Sy(u,0),Sz(u,0) lw 2 lc rgb "yellow"
+
