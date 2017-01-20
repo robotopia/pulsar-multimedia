@@ -1,0 +1,11 @@
+
+
+set multiplot layout 1,2
+
+set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black"
+load 'ellipse.gpi'
+
+unset object 1
+load 'sphere.gpi'
+
+unset multiplot
