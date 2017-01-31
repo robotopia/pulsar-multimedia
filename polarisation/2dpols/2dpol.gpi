@@ -1,20 +1,13 @@
-set terminal pngcairo enhanced size 600,600 background rgb "black"
+# Assumes "nframes", "frame", "phi", and "chi" are defined
 
 set ls 1 lc rgb "white"
-set ls 4 lw 2 lc rgb "white"
-set ls 2 pt 7 ps 1.0 lc rgb "yellow"
-set ls 3 lw 2 lt 0 lc rgb "white"
-set palette defined ( 0 "yellow", 1 "black" )
+set ls 2 lw 2 lt 0 lc rgb "white"
+set ls 3 lw 2 lc rgb "white"
 
 unset border
 unset key
 unset tics
 unset colorbox
-
-basename = arg1
-nframes  = arg2
-phi = arg3*pi/180 # polarisation angle
-chi = arg4*pi/180 # "eccentricity"
 
 Px(phi,chi,phase) = cos(phi)*cos(phase) - tan(chi)*sin(phi)*sin(phase)
 Py(phi,chi,phase) = sin(phi)*cos(phase) + tan(chi)*cos(phi)*sin(phase)
@@ -29,18 +22,25 @@ set size ratio -1
 
 set pm3d map
 
-do for [frame=1:nframes] {
+T = 2.0*pi*frame/nframes
+mod(x,m) = x - floor(x/m)*m
 
-    T = 2.0*pi*frame/nframes
+set palette model HSV
+set palette functions mod(gray+T/(2*pi),1),1,gray
+set palette maxcolors nframes
 
-    outfile = sprintf("%s%03d.png", basename, frame)
-    set output outfile
-    
-    set arrow 1 from 0,0 to Px(phi,chi,T),Py(phi,chi,T) ls 4
-    set arrow 2 from Px(phi,chi,T),0 to Px(phi,chi,T),Py(phi,chi,T) nohead ls 3
-    set arrow 3 from 0,Py(phi,chi,T) to Px(phi,chi,T),Py(phi,chi,T) nohead ls 3
-    set arrow 4 from 0,0 to 0,Py(phi,chi,T) ls 1
-    set arrow 5 from 0,0 to Px(phi,chi,T),0 ls 1
-    splot Px(phi,chi,T+u),Py(phi,chi,T+u),-u/(2*pi) with lines lw 2 lc palette
+set arrow 1 from 0,0 to Px(phi,chi,T),Py(phi,chi,T) ls 3
+set arrow 2 from Px(phi,chi,T),0 to Px(phi,chi,T),Py(phi,chi,T) nohead ls 2
+set arrow 3 from 0,Py(phi,chi,T) to Px(phi,chi,T),Py(phi,chi,T) nohead ls 2
+set arrow 4 from 0,0 to 0,Py(phi,chi,T) ls 1
+set arrow 5 from 0,0 to Px(phi,chi,T),0 ls 1
+splot Px(phi,chi,T+u),Py(phi,chi,T+u),u with lines lw 2 lc palette
 
-}
+unset arrow 1
+unset arrow 2
+unset arrow 3
+unset arrow 4
+unset arrow 5
+
+unset pm3d
+unset parametric

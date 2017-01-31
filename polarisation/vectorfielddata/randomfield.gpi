@@ -26,6 +26,6 @@ do for [frame=1:nframes] {
     rotangle = 1.0*frame/nframes * 90 + 10
     set view ,rotangle
 
-    splot infile with vectors ls 2
+    splot infile every ::1 with vectors ls 2
 
 }

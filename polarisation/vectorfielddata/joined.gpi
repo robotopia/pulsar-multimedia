@@ -1,0 +1,25 @@
+set terminal pngcairo enhanced size 1200,600 background rgb "black"
+
+basename = arg1
+nframes = arg2
+phi = arg3*pi/180 # polarisation angle
+chi = arg4*pi/180 # "eccentricity"
+
+do for [frame=1:nframes] {
+
+    infile  = sprintf("%s%03d.dat", basename, frame)
+    outfile = sprintf("%s%03d.png", basename, frame)
+    set output outfile
+
+    set multiplot layout 1,2
+
+        # Plot 3D vector field on left
+        load "planewave.gpi"
+        #set multiplot next
+
+        # Plot 2D vector on right
+        load "../2dpols/2dpol.gpi"
+
+    unset multiplot
+
+}

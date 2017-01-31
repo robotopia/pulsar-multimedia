@@ -4,9 +4,10 @@ FFMPEG  = ffmpeg
 
 NFRAMES = $(shell cat nframes)
 
-default: pwy.gif
-
-all: vf.gif  pwx.gif  pwy.gif pwc.gif
+all: vf.gif \
+	 pwx.gif \
+	 pwy.gif \
+	 pwc.gif
 
 # RANDOM VECTOR FIELD
 
@@ -23,46 +24,29 @@ vf.dat: randomfield.m  nframes  writevf.m
 
 # PLANE WAVES
 
-# LINEAR X
-pwx.gif: pwx.png
+pw%.gif: pw%.png
 	convert -loop 0 -delay 5 $(basename $<)???$(suffix $<) $@
 
-pwx.png: planewave.gpi  pwx.dat  nframes
-	$(GNUPLOT) -e "arg1 = $(NFRAMES); arg2 = \"$(basename $@)\";" $<
+pwx.png: joined.gpi  planewave.gpi  pwx.dat  nframes  ../2dpols/2dpol.gpi
+	$(GNUPLOT) -e "arg1 = \"$(basename $@)\"; arg2 = $(NFRAMES); arg3 = 90; arg4 =  0;" $<
 	touch $@
 
-pwx.dat: planewavex.m  nframes  writevf.m
-	$(OCTAVE) $< $(NFRAMES) $(basename $@)
+pwy.png: joined.gpi  planewave.gpi  pwy.dat  nframes  ../2dpols/2dpol.gpi
+	$(GNUPLOT) -e "arg1 = \"$(basename $@)\"; arg2 = $(NFRAMES); arg3 =  0; arg4 =  0;" $<
 	touch $@
 
-# LINEAR Y
-pwy.gif: pwy.png
-	convert -loop 0 -delay 5 $(basename $<)???$(suffix $<) $@
-
-pwy.png: planewave.gpi  pwy.dat  nframes
-	$(GNUPLOT) -e "arg1 = $(NFRAMES); arg2 = \"$(basename $@)\";" $<
+pwc.png: joined.gpi  planewave.gpi  pwc.dat  nframes  ../2dpols/2dpol.gpi
+	$(GNUPLOT) -e "arg1 = \"$(basename $@)\"; arg2 = $(NFRAMES); arg3 =  0; arg4 = 45;" $<
 	touch $@
 
-pwy.dat: planewavey.m  nframes  writevf.m
-	$(OCTAVE) $< $(NFRAMES) $(basename $@)
-	touch $@
-
-# CIRCULAR
-pwc.gif: pwc.png
-	convert -loop 0 -delay 5 $(basename $<)???$(suffix $<) $@
-
-pwc.png: planewave.gpi  pwc.dat  nframes
-	$(GNUPLOT) -e "arg1 = $(NFRAMES); arg2 = \"$(basename $@)\";" $<
-	touch $@
-
-pwc.dat: planewavec.m  nframes  writevf.m
+pw%.dat: planewave%.m  nframes  writevf.m
 	$(OCTAVE) $< $(NFRAMES) $(basename $@)
 	touch $@
 
 # CLEAN DIRECTORY
 
 clean:
-	$(RM) *.gif *.png *.dat
+	$(RM) *.png *.dat
 
 clean-stills:
-	$(RM) *[0-9][0-9][0-9].png *[0-9][0-9][0-9].dat
+	$(RM) *[0-9][0-9][0-9].png *.dat

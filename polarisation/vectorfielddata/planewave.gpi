@@ -1,7 +1,4 @@
-set terminal pngcairo enhanced size 600,600 background rgb "black"
-
-nframes  = arg1
-basename = arg2
+# Assumes "infile" is defined
 
 set xyplane 0
 set size ratio -1
@@ -9,7 +6,7 @@ set view 60,120
 
 set ls 1 lc rgb "white"
 set ls 2 lc rgb "yellow"
-set ls 3 lw 2 lc rgb "white"
+set ls 3 lw 2 lt 1 lc rgb "white"
 set border 4095 ls 1
 
 unset key
@@ -28,12 +25,10 @@ unset colorbox
 set arrow 1 from 11,2,0 to 11,8,0 ls 3
 set label 1 "Poynting vector" at 12,5,0 center rotate by -15 tc rgb "white"
 
-do for [frame=1:nframes] {
+splot infile every ::1 with vectors nohead lc palette
 
-    infile  = sprintf("%s%03d.dat", basename, frame)
-    outfile = sprintf("%s%03d.png", basename, frame)
-    set output outfile
-
-    splot infile with vectors nohead lc palette
-
-}
+unset arrow 1
+unset label 1
+set cbrange [*:*]
+unset view
+unset xyplane

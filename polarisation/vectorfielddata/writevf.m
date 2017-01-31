@@ -48,6 +48,7 @@ for frame = 1:nframes
 
     % Write to file
     f = fopen(outfile, 'w');
+    fprintf(f, 'x y z dx dy dz phase\n');
     fprintf(f, format, output');
     fclose(f);
 
