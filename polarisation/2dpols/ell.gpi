@@ -2,8 +2,8 @@ set terminal pngcairo enhanced size 600,600 background rgb "black"
 
 basename = arg1
 nframes  = arg2
-phi      = arg3
-chi      = arg4
+phi      = arg3*pi/180
+chi      = arg4*pi/180
 
 do for [frame=1:nframes] {
 
