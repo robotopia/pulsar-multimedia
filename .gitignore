@@ -1,7 +1,12 @@
 *.png
 *.mpg
 *.ogv
+*.ogg
+*.jpg
 *.blend1
 *.dat
 *.gif
 timeseries_animations/make-mean-profile/data/*.txt
+timeseries_animations/make-mean-profile/data/data.F
+timeseries_animations/make-mean-profile/nbins
+.*.swp
