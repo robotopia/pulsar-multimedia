@@ -4,3 +4,4 @@
 *.blend1
 *.dat
 *.gif
+timeseries_animations/make-mean-profile/data/*.txt

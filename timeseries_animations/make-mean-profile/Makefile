@@ -1,19 +1,17 @@
-TIMESERIES = $(shell findrepo "PKS.*J0630")/timeseries/dataset.dat
-ARCHIVE    = $(shell findrepo "PKS.*J0630")/archive/J0630-2834_1.ar
-NBINSFILE  = $(shell findrepo "PKS.*J0630")/archive/nbins
-NBINS      = $(shell cat $(NBINSFILE))
+NFRAMES = 425
+FRAMENUMS = $(shell seq -w 1 $(NFRAMES))
+FRAMEFILES = $(patsubst %,profile_%.png,$(FRAMENUMS))
 
-profile.png: profile.gpi $(TIMESERIES) nbins
-	gnuplot -e "arg1 = \"$(word 2,$^)\"; arg2 = \"$(basename $@)\"; arg3 = 425; arg4 = 25; arg5 = $(NBINS);" $< > $@
+frames: $(FRAMEFILES)
 
-data_mean_%.txt: data.txt
-	pdv -tFCT $< | tail -n +2 > $@
+profile_%.png: profile.gpi nbins
+	mygnuplot -o png -s 1000,500 profile.gpi data/cumdata data/intdata $(NFRAMES) $* $(shell cat $(word 2,$^)) > $@
 
-data.txt: $(TIMESERIES)
-	sed "0~1024G;" < $< > $@
-
-nbins: $(NBINSFILE)
-	cp $< $@
+nbins: data/data.F
+	psrstat -c nbin $< | cut -f2 -d'=' > $@
 
 clean:
 	$(RM) profile*.png
+
+data/%:
+	$(MAKE) -C $(@D) $(@F)

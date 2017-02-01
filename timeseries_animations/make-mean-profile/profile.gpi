@@ -1,10 +1,10 @@
-#set terminal pngcairo enhanced size 800,600 background rgb "black"
+cumbasename  = arg1
+intbasename  = arg2
+nframes      = arg3
+frame        = arg4
+nbins        = arg5
 
-pdvdata   = arg1
-basename  = arg2
-nframes   = arg3
-framerate = arg4
-nbins     = arg5
+npulses   = system("psrstat -c nbin data/data.F | cut -f2 -d'='") + 0.0
 
 # Animation description (timing is approximate)
 # |----- 3s ------| 1s -|---- 4s ----|----------- 6s ------------|
@@ -13,9 +13,9 @@ nbins     = arg5
 # Total = 14 secs
 #
 # Elements that need animating:
-# View angle:        from t=8 to t=12
+# View angle:        from t=8 to t=14
 # Pulse rotation:    from t=0 to t=3
-# Pulse locations:   from t=4 to t=14
+# Pulse locations:   from t=4 to t=12
 # 
 # Therefore, define checkpoints:
 totaltime   = 14.0  # (arbitrary units: not necessarily seconds)
@@ -32,37 +32,53 @@ cpn(n) = word(cps,n)+0.0   # Extract the nth checkpoint
 smth_clock(T)        = 3*T**2 - 2*T**3                                  # Smooth the animation
 sub_clock(T, T1, T2) = (T < T1 ? 0 : (T > T2 ? 1 : (T - T1)/(T2 - T1))) # Get a "sub" clock
 acc_clock(T, a)      = T**a
+interp(f,a,b)        = a + f*(b-a)                                      # Linear interpolation
 
 # Easier to manipulate plot elements in parametric
 set parametric
 
+# Make "clocks" for various effects
+# Clocks are always between 0 and 1 inclusive
+clock = (frame - 1.0) / (nframes - 1.0)   # 0 <= clock <= 1
+clock_rot  = smth_clock(sub_clock(clock, cpn(1), cpn(2)))
+clock_vw   = smth_clock(sub_clock(clock, cpn(4), cpn(6)))
+clock_loc  =  acc_clock(sub_clock(clock, cpn(3), cpn(6)), 4)
+clock_fade = smth_clock(sub_clock(clock, cpn(5), cpn(6)))
+#print clock, clock_rot, clock_vw, clock_loc
+
 # Plot look and feel
-set ls 1 lw 2 lc rgb "white"
-set size ratio -1
+#set palette defined (0 "white", 1 "black")
 set xrange [0:10]
+ylo = interp(clock_vw, -2.0, -1.0)
+yhi = interp(clock_vw,  1.0, -0.65)
+set yrange [ylo:yhi]
+set zrange [-0.02:0.20]
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+set grid lc rgb "white"
+set xyplane 0
+set view interp(clock_vw,60,90),interp(clock_vw, 340, 270),1,1
+unset colorbox
 
-#do for [frame=1:nframes] {
+# Sort out transparency for later in the animation
+whitenumber = (255 << 16) + (255 << 8) + (255)
+fadecolor   = (floor(clock_fade*255) << 24) + whitenumber
 
-frame = 1
-    # Make "clocks" for various effects
-    # Clocks are always between 0 and 1 inclusive
-    clock = (frame - 1.0) / (nframes - 1.0)   # 0 <= clock <= 1
-    clock_rot = smth_clock(sub_clock(clock, cpn(1), cpn(2)))
-    clock_vw  = smth_clock(sub_clock(clock, cpn(4), cpn(5)))
-    clock_loc =  acc_clock(sub_clock(clock, cpn(3), cpn(6)), 4)
-    #print clock, clock_rot, clock_vw, clock_loc
+# Find the relevant input files
+pulsenumber = floor(clock_loc * npulses)
+cumfile = sprintf("%s_%04d.txt", cumbasename, pulsenumber)
 
-    # Set the output file for this frame
-#    outfile = sprintf("%s%04d.png", basename, frame)
-#    set output outfile
+# Plot the pulses
+rot_angle = clock_rot * pi/2.0
+splot \
+     for [p=pulsenumber:pulsenumber+9] \
+         sprintf("%s_%04d.txt", intbasename, p) \
+         using (p+0.9-(clock_loc*npulses)+cos(rot_angle)*column("phasebin")/nbins): \
+               (-sin(rot_angle)*column("phasebin")/nbins): \
+               (column("I")/npulses) \
+         w l lw 1 lc rgb fadecolor notitle, \
+     cumfile \
+          using (cos(rot_angle)*column("phasebin")/nbins): \
+                (-sin(rot_angle)*column("phasebin")/nbins): \
+                (pulsenumber > 0 ? interp(clock_vw,1,4)*column("I")/npulses : 1/0) \
+          w l lw 2 lc rgb "red" notitle
 
-    # Be selective with the data in the input files so that gnuplot doesn't have
-    # to process the whole file for every frame
-    # The proportion of pulses that contributes to the mean profile is clock_loc
-    
-
-    # Plot it (with rotation for now)
-    rot_angle = clock_rot * pi/2.0
-    splot pdvdata using ($1+cos(rot_angle)*$3/nbins):(-sin(rot_angle)*$3/nbins):4 w l notitle
-
-#}
