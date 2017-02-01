@@ -1,0 +1,5 @@
+set view 90,90,1,1
+
+plotactivefieldline = "no"
+
+load '3dpulsar.gpi'

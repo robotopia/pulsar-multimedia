@@ -1,0 +1,63 @@
+# Assumes "alpha", "zeta", and "clock" are all defined
+# (0 < alpha < pi)
+# (0 <  zeta < pi)
+# (0 < clock < 1 )
+
+ymargin = 0.7
+xmargin = 0.5
+
+phase = clock*2*pi
+set angle radians
+
+set multiplot
+
+    # Set global background
+    set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black" behind
+    set lt 1 lc rgb "white"
+    set lt 2 lc rgb "#77FF00FF" # Semitransparent magenta
+
+    # Top plot = position angle
+    set tmargin at screen 0.98
+    set bmargin at screen ymargin
+    set lmargin at screen 0.15 # Leave room for axis labels etc
+    set rmargin at screen 0.98
+
+    load 'positionangle.gpi'
+
+    unset object 1
+
+    # Bottom left = side view
+    set tmargin at screen ymargin
+    set bmargin at screen 0.0
+    set lmargin at screen 0.0
+    set rmargin at screen xmargin
+
+    arrowlength = 2.0
+    set arrow 1 from 0,0,0 to 0, \
+                              0, \
+                              arrowlength \
+                              front lc rgb "white" # Rotation axis
+    set arrow 2 from 0,0,0 to arrowlength*sin(zeta), \
+                              0, \
+                              arrowlength*cos(zeta) \
+                              front lc rgb "white" # Line of sight
+    set arrow 3 from 0,0,0 to arrowlength*sin(alpha)*cos(phase), \
+                              arrowlength*sin(alpha)*sin(phase), \
+                              arrowlength*cos(alpha) \
+                              front lc rgb "white"
+
+    load 'sideview.gpi'
+
+    unset arrow 1
+    unset arrow 2
+    unset arrow 3
+
+    # Bottom right = observer view
+    set tmargin at screen ymargin
+    set bmargin at screen 0.0
+    set lmargin at screen xmargin
+    set rmargin at screen 1.0
+
+    load 'obsview.gpi'
+
+unset multiplot
