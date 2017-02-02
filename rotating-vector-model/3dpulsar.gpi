@@ -50,9 +50,9 @@ if (plotactivefieldline eq "yes") {
               magx(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
               magy(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
               magz(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)) lt 2, \
-          magx(rx(u,sigma(lineno*pi/4)),ry(u,sigma(lineno*pi/4)),rz(u,sigma(lineno*pi/4))), \
-          magy(rx(u,sigma(lineno*pi/4)),ry(u,sigma(lineno*pi/4)),rz(u,sigma(lineno*pi/4))), \
-          magz(rx(u,sigma(lineno*pi/4)),ry(u,sigma(lineno*pi/4)),rz(u,sigma(lineno*pi/4))) \
+          magx(rx(u,sigma(phase)),ry(u,sigma(phase)),rz(u,sigma(phase))), \
+          magy(rx(u,sigma(phase)),ry(u,sigma(phase)),rz(u,sigma(phase))), \
+          magz(rx(u,sigma(phase)),ry(u,sigma(phase)),rz(u,sigma(phase))) \
               lc rgb transyellow(window(cmod(phase,2*pi)))
 
 } else {
