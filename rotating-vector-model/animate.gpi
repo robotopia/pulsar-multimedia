@@ -1,0 +1,12 @@
+basename = arg1
+nframes  = arg2
+frame    = arg3
+alpha    = arg4*pi/180 # deg -> rad
+zeta     = arg5*pi/180 # deg -> rad
+
+clock   = frame / nframes
+outfile = sprintf("%s%03d.png", basename, frame)
+set output outfile
+
+load "all.gpi"
+
