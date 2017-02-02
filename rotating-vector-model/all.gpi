@@ -19,7 +19,7 @@ set multiplot
     # Top plot = position angle
     set tmargin at screen 0.98
     set bmargin at screen ymargin
-    set lmargin at screen 0.15 # Leave room for axis labels etc
+    set lmargin at screen 0.10 # Leave room for axis labels etc
     set rmargin at screen 0.98
 
     load 'positionangle.gpi'

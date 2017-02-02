@@ -1,4 +1,4 @@
-set view 90,90,1,1
+set view 90,0,1,1
 
 plotactivefieldline = "no"
 

@@ -1,1 +1,5 @@
-plot x**2
+set border lc rgb "white"
+set ytics tc rgb "white"
+set ylabel "P.A. (deg)" tc rgb "white"
+
+plot t,t**2

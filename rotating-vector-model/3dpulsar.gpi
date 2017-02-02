@@ -29,7 +29,7 @@ yy(u, v) = sin(u) * sin(v)
 zz(u, v) = cos(u)
 
 # Max distance from origin for dipole field lines
-R = 2 # Assumes pulsar has radius 1
+R = 3 # Assumes pulsar has radius 1
 
 # Formulae for field lines
 r(th) = R * sin(th)**2       # (th = colat)
@@ -44,3 +44,8 @@ splot magx(xx(u,v),yy(u,v),zz(u,v)), \
           magx(rx(u,phi),ry(u,phi),rz(u,phi)), \
           magy(rx(u,phi),ry(u,phi),rz(u,phi)), \
           magz(rx(u,phi),ry(u,phi),rz(u,phi))
+
+#splot for [phi=pi/4:pi/4:2*pi] \
+#          magx(rx(u,phi),ry(u,phi),rz(u,phi)), \
+#          magy(rx(u,phi),ry(u,phi),rz(u,phi)), \
+#          magz(rx(u,phi),ry(u,phi),rz(u,phi))

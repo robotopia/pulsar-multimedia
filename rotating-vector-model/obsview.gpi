@@ -1,4 +1,4 @@
-set view alpha*180/pi,0,1,1
+set view zeta*180/pi,90,1,1
 
 plotactivefieldline = "yes"
 
