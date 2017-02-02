@@ -4,7 +4,7 @@ frame    = arg3
 alpha    = arg4*pi/180 # deg -> rad
 zeta     = arg5*pi/180 # deg -> rad
 
-clock   = frame / nframes
+clock   = (frame+0.0) / nframes
 outfile = sprintf("%s%03d.png", basename, frame)
 set output outfile
 

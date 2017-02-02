@@ -2,11 +2,12 @@
 # (all between 0 and 2*pi)
 
 set border lc rgb "white"
-set xtics ("-{/Symbol p}"   -pi,   \
-           "-{/Symbol p}/2" -pi/2, \
+set encoding utf8
+set xtics ("-π"   -pi,   \
+           "-π/2" -pi/2, \
            "0"               0,    \
-           "{/Symbol p}/2"   pi/2, \
-           "{/Symbol p}"     pi) scale 0 tc rgb "white"
+           "π/2"   pi/2, \
+           "π"     pi) scale 0 tc rgb "white"
 set ytics 30 scale 0 tc rgb "white"
 
 set xlabel "Rotation phase (rad)" tc rgb "white"
@@ -21,14 +22,22 @@ set parametric
 
 PA(phi) = atan2(sin(alpha)*sin(phi), (sin(zeta)*cos(alpha) - cos(zeta)*sin(alpha)*cos(phi)))
 
+ctrail(x,m,M) = mod(x-m,M)/M
+
 set samples 1000
 set xrange [-pi:pi]
 set yrange [-90:90]
+set cbrange [0:1]
 set view noequal
+unset colorbox
 unset hidden3d
 
 set pm3d map
 
-splot [-pi:cmod(phase,2*pi)] u,PA(u)*180/pi,window(u) lc palette
+ulo = -pi
+uhi =  pi
+thisu = cmod(phase,2*pi)
+splot [ulo:uhi] u,PA(u)*180/pi,window(u)*ctrail(u,thisu,uhi-ulo) with lines lw 1 lc palette, \
+                thisu,PA(thisu)*180/pi,0 with points pt 7 lc rgb "yellow"
 
 unset pm3d
