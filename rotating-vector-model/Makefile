@@ -1,4 +1,4 @@
-NFRAMES = 72
+NFRAMES = 96
 ALPHA   = 45
 ZETA    = 50
 

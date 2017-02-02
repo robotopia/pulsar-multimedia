@@ -2,4 +2,8 @@ set view zeta*180/pi,90,1,1
 
 plotactivefieldline = "yes"
 
+set label 1 "Observer view" at screen 0.75,0.03 center front font ",20" tc rgb "white"
+
 load '3dpulsar.gpi'
+
+unset label 1

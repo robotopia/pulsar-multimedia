@@ -2,4 +2,8 @@ set view 90,0,1,1
 
 plotactivefieldline = "no"
 
+set label 1 "Side view" at screen 0.25,0.03 center front font ",20" tc rgb "white"
+
 load '3dpulsar.gpi'
+
+unset label 1
