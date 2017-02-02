@@ -6,10 +6,10 @@ unset border
 unset tics
 
 set view equal xyz
+set hidden3d front
 
 set parametric
-set samples 361
-set isosamples 16
+set isosamples 33
 
 set urange [0:pi]
 set vrange [0:2*pi]
@@ -37,15 +37,24 @@ rx(th,phi) = r(th)*xx(th,phi)  # (0 < u=th < pi; phi = azimuth)
 ry(th,phi) = r(th)*yy(th,phi)  #              "
 rz(th,phi) = r(th)*zz(th,phi)  #              "
 
-splot magx(xx(u,v),yy(u,v),zz(u,v)), \
-      magy(xx(u,v),yy(u,v),zz(u,v)), \
-      magz(xx(u,v),yy(u,v),zz(u,v)), \
-      for [phi=pi/4:pi/4:2*pi] \
-          magx(rx(u,phi),ry(u,phi),rz(u,phi)), \
-          magy(rx(u,phi),ry(u,phi),rz(u,phi)), \
-          magz(rx(u,phi),ry(u,phi),rz(u,phi))
+if (plotactivefieldline eq "yes") {
 
-#splot for [phi=pi/4:pi/4:2*pi] \
-#          magx(rx(u,phi),ry(u,phi),rz(u,phi)), \
-#          magy(rx(u,phi),ry(u,phi),rz(u,phi)), \
-#          magz(rx(u,phi),ry(u,phi),rz(u,phi))
+    splot magx(xx(u,v),yy(u,v),zz(u,v)), \
+          magy(xx(u,v),yy(u,v),zz(u,v)), \
+          magz(xx(u,v),yy(u,v),zz(u,v)), \
+          for [lineno=0:7] \
+              magx(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
+              magy(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
+              magz(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)) lt 2
+
+} else {
+
+    splot magx(xx(u,v),yy(u,v),zz(u,v)), \
+          magy(xx(u,v),yy(u,v),zz(u,v)), \
+          magz(xx(u,v),yy(u,v),zz(u,v)), \
+          for [lineno=0:7] \
+              magx(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
+              magy(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
+              magz(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)) lt 2
+
+}

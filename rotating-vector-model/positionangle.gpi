@@ -1,5 +1,38 @@
+# Assumes "alpha", "zeta", "phase" are all defined
+# (all between 0 and 2*pi)
+
 set border lc rgb "white"
-set ytics tc rgb "white"
+set xtics ("-{/Symbol p}"   -pi,   \
+           "-{/Symbol p}/2" -pi/2, \
+           "0"               0,    \
+           "{/Symbol p}/2"   pi/2, \
+           "{/Symbol p}"     pi) scale 0 tc rgb "white"
+set ytics 30 scale 0 tc rgb "white"
+
+set xlabel "Rotation phase (rad)" tc rgb "white"
 set ylabel "P.A. (deg)" tc rgb "white"
 
-plot t,t**2
+set grid lc rgb "white"
+
+unset key
+
+set palette defined (0 "#000000", 1 "#FFFF00")
+window(t) = exp(-2*pi*t**2)
+
+set parametric
+
+PA(phi) = atan2(sin(alpha)*sin(phi), (sin(zeta)*cos(alpha) - cos(zeta)*sin(alpha)*cos(phi)))
+mod(x,m) = x - floor(1.0*x/m)*m
+cmod(x,m) = mod(x-0.00001+m/2.0,m)-m/2.0 # The "-0.00001" is to ensure m/2 < x <= m/2
+
+set samples 1000
+set xrange [-pi:pi]
+set yrange [-90:90]
+set view noequal
+unset hidden3d
+
+set pm3d map
+
+splot [-pi:cmod(phase,2*pi)] u,PA(u)*180/pi,window(u) lc palette
+
+unset pm3d

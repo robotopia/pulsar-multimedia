@@ -18,7 +18,7 @@ set multiplot
 
     # Top plot = position angle
     set tmargin at screen 0.98
-    set bmargin at screen ymargin
+    set bmargin at screen ymargin + 0.05
     set lmargin at screen 0.10 # Leave room for axis labels etc
     set rmargin at screen 0.98
 
@@ -36,15 +36,17 @@ set multiplot
     set arrow 1 from 0,0,0 to 0, \
                               0, \
                               arrowlength \
-                              front lc rgb "white" # Rotation axis
+                              lc rgb "white" # Rotation axis
     set arrow 2 from 0,0,0 to arrowlength*sin(zeta), \
                               0, \
                               arrowlength*cos(zeta) \
-                              front lc rgb "white" # Line of sight
+                              lc rgb "white" # Line of sight
     set arrow 3 from 0,0,0 to arrowlength*sin(alpha)*cos(phase), \
                               arrowlength*sin(alpha)*sin(phase), \
                               arrowlength*cos(alpha) \
-                              front lc rgb "white"
+                              lc rgb "white"
+
+    plotactivefieldline = "no"
 
     load 'sideview.gpi'
 
@@ -57,6 +59,8 @@ set multiplot
     set bmargin at screen 0.0
     set lmargin at screen xmargin
     set rmargin at screen 1.0
+
+    plotactivefieldline = "yes"
 
     load 'obsview.gpi'
 
