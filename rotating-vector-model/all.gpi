@@ -9,6 +9,16 @@ xmargin = 0.5
 phase = clock*2*pi
 set angle radians
 
+# A function for when to turn on the yellow lines
+window(t) = exp(-2*pi*t**2)
+
+# Equivalent to a palette map from transparent to yellow
+transyellow(t) = (floor(255*(1-t)) << 24) + (255 << 16) + (255 << 8) + 0
+
+# Some general modulus functions
+mod(x,m) = x - floor(1.0*x/m)*m
+cmod(x,m) = mod(x-0.00001+m/2.0,m)-m/2.0 # The "-0.00001" is to ensure m/2 < x <= m/2
+
 set multiplot
 
     # Set global background

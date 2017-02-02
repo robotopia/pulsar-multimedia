@@ -29,7 +29,8 @@ yy(u, v) = sin(u) * sin(v)
 zz(u, v) = cos(u)
 
 # Max distance from origin for dipole field lines
-R = 3 # Assumes pulsar has radius 1
+R  = 3.0
+rp = 0.6 # pulsar radius
 
 # Formulae for field lines
 r(th) = R * sin(th)**2       # (th = colat)
@@ -37,21 +38,28 @@ rx(th,phi) = r(th)*xx(th,phi)  # (0 < u=th < pi; phi = azimuth)
 ry(th,phi) = r(th)*yy(th,phi)  #              "
 rz(th,phi) = r(th)*zz(th,phi)  #              "
 
+sigma(phi) = atan2(sin(zeta)*sin(phi), sin(alpha)*cos(zeta) - cos(alpha)*sin(zeta)*cos(phi)) + pi
+
+
 if (plotactivefieldline eq "yes") {
 
-    splot magx(xx(u,v),yy(u,v),zz(u,v)), \
-          magy(xx(u,v),yy(u,v),zz(u,v)), \
-          magz(xx(u,v),yy(u,v),zz(u,v)), \
+    splot rp*magx(xx(u,v),yy(u,v),zz(u,v)), \
+          rp*magy(xx(u,v),yy(u,v),zz(u,v)), \
+          rp*magz(xx(u,v),yy(u,v),zz(u,v)), \
           for [lineno=0:7] \
               magx(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
               magy(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
-              magz(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)) lt 2
+              magz(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)) lt 2, \
+          magx(rx(u,sigma(lineno*pi/4)),ry(u,sigma(lineno*pi/4)),rz(u,sigma(lineno*pi/4))), \
+          magy(rx(u,sigma(lineno*pi/4)),ry(u,sigma(lineno*pi/4)),rz(u,sigma(lineno*pi/4))), \
+          magz(rx(u,sigma(lineno*pi/4)),ry(u,sigma(lineno*pi/4)),rz(u,sigma(lineno*pi/4))) \
+              lc rgb transyellow(window(cmod(phase,2*pi)))
 
 } else {
 
-    splot magx(xx(u,v),yy(u,v),zz(u,v)), \
-          magy(xx(u,v),yy(u,v),zz(u,v)), \
-          magz(xx(u,v),yy(u,v),zz(u,v)), \
+    splot rp*magx(xx(u,v),yy(u,v),zz(u,v)), \
+          rp*magy(xx(u,v),yy(u,v),zz(u,v)), \
+          rp*magz(xx(u,v),yy(u,v),zz(u,v)), \
           for [lineno=0:7] \
               magx(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
               magy(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
