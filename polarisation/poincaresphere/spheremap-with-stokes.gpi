@@ -29,9 +29,9 @@ unset colorbox
 set hidden3d front
 set view equal xyz
 
-set arrow 1 from 0,0,0 to 2.4,0,0 lc rgb "white"
-set arrow 2 from 0,0,0 to 0,1.5,0 lc rgb "white"
-set arrow 3 from 0,0,0 to 0,0,1.7 lc rgb "white"
+set arrow 1 from 0,0,0 to 2.4,0,0 lw 2 lc rgb "yellow"
+set arrow 2 from 0,0,0 to 0,1.5,0 lw 2 lc rgb "green"
+set arrow 3 from 0,0,0 to 0,0,1.7 lw 2 lc rgb "cyan"
 
 set arrow 4 from 0,0.5,1.7 to 0,0,1  front        lw 2 lc rgb "red"
 set arrow 5 from 0,0,-1.4  to 0,0,-1.16 front nohead lw 2 lc rgb "red"
@@ -39,6 +39,10 @@ set arrow 5 from 0,0,-1.4  to 0,0,-1.16 front nohead lw 2 lc rgb "red"
 set label 1 "Right Circular" at 0,0.1,1.7 left   tc rgb "white"
 set label 2  "Left Circular" at 0,0,-1.5  center tc rgb "white"
 set label 3         "Linear" at 0,1.4,0.2 center tc rgb "white"
+
+set label 4 "Q " at 2.4,0,0 right tc rgb "yellow" font "Times,20"
+set label 5 " U" at 0,1.5,0 left  tc rgb "green"  font "Times,20"
+set label 6 "V " at 0,0,1.7 right tc rgb "cyan"   font "Times,20"
 
 splot Sx(u,v),Sy(u,v),Sz(u,v) lc rgb "white", \
       Sx(u,0),Sy(u,0),Sz(u,0) lw 2 lc rgb "orange"

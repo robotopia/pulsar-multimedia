@@ -16,6 +16,11 @@ set xrange [0.7:1]
 set yrange [-0.02:0.25]
 set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
 
+set tmargin at screen 1.0
+set bmargin at screen 0.05
+set rmargin at screen 1.0
+set lmargin at screen 0.0
+
 do for [l=1:words(colnames)] {
     set label l word(colnames,l) \
         at word(labxpos,l)+0.0, \

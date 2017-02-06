@@ -1,0 +1,41 @@
+# Assumes "alpha", "zeta", "phase", and "window(t)" are all defined
+# (all between 0 and 2*pi)
+
+set border lc rgb "white"
+set encoding utf8
+set xtics ("-π"   -pi,   \
+           "-π/2" -pi/2, \
+           "0"               0,    \
+           "π/2"   pi/2, \
+           "π"     pi) scale 0 tc rgb "white"
+set ytics 30 scale 0 tc rgb "white"
+
+set xlabel "Rotation phase (rad)" tc rgb "white"
+set ylabel "P.A. (deg)" tc rgb "white"
+
+set grid lc rgb "white"
+
+unset key
+
+set parametric
+
+PA(phi) = atan2(sin(alpha)*sin(phi), (sin(zeta)*cos(alpha) - cos(zeta)*sin(alpha)*cos(phi)))
+
+ctrail(x,m,M) = mod(x-m,M)/M
+
+set samples 1000
+set xrange [-pi:pi]
+set yrange [-90:90]
+set cbrange [0:1]
+set view noequal
+unset colorbox
+unset hidden3d
+
+set pm3d map
+
+ulo = -pi
+uhi =  pi
+thisu = cmod(phase,2*pi)
+splot [ulo:uhi] u,PA(u)*180/pi,1 with lines lw 1 lc rgb "yellow"
+
+unset pm3d
