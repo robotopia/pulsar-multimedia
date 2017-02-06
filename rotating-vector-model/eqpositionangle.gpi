@@ -10,7 +10,7 @@ set xtics ("-π"   -pi,   \
            "π"     pi) scale 0 tc rgb "white"
 set ytics 30 scale 0 tc rgb "white"
 
-set xlabel "Rotation phase (rad)" tc rgb "white"
+set xlabel "Rotation phase, φ (rad)" tc rgb "white"
 set ylabel "P.A. (deg)" tc rgb "white"
 
 set grid lc rgb "white"

@@ -55,7 +55,13 @@ set multiplot
 
     plotactivefieldline = "no"
 
+    set label 2 "α" at -1.1*sin(alpha/2.0),0,1.1*cos(alpha/2.0) center tc rgb "yellow" font ",16"
+    set label 3 "ζ" at  1.1*sin(zeta /2.0),0,1.1*cos(zeta /2.0) center tc rgb "yellow" font ",16"
+
     load 'sideview.gpi'
+
+    unset label 2
+    unset label 3
 
     unset arrow 1
     unset arrow 2
