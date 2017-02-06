@@ -4,6 +4,9 @@ FRAMEFILES = $(patsubst %,profile_%.png,$(FRAMENUMS))
 
 .SECONDARY: profile_001.png profile_$(NFRAMES).png
 
+stokes.png: stokes.gpi data/cumdata_1797.txt nbins
+	mygnuplot -o png -s 1000,500 $(wordlist 1,2,$^) $(shell cat $(word 3,$^)) > $@
+
 profile.gif: $(FRAMEFILES)
 	convert -loop 0 -delay 3 profile_???$(suffix $<) $@
 

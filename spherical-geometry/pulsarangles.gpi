@@ -51,6 +51,7 @@ zeta  = deg2rad(40) # Angle between rotation axis and line-of-sight
 phi   = deg2rad(45) # Rotation phase
 Gamma = acos(cos(alpha)*cos(zeta) + sin(alpha)*sin(zeta)*cos(phi))
 sigma = asin(sin(zeta)*sin(phi)/sin(Gamma))
+PA    = atan2(sin(alpha)*sin(phi),(cos(alpha)*sin(zeta)-sin(alpha)*cos(zeta)*cos(phi)))
 
 # (Set rotation axis aligned with z axis)
 # Line for angle zeta

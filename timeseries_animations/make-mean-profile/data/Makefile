@@ -18,11 +18,11 @@ data.F: $(ARCHIVE)
 	mv $(basename $(notdir $<)).F $@
 
 cumdata_%.F: data.F
-	pam --settsub $$(($*+1)) -e F$* $<
+	pam --settsub $$((10#$*+1)) -e F$* $<
 	mv data.F$* $@
 
 cumdata_%.txt: cumdata_%.F
-	pdv -t -i 0 $< | tail -n+2 | addpdvheader > $@
+	pdv -tZ -i 0 $< | tail -n+2 | addpdvheader -Z > $@
 
 intdata_%.txt: data.F
-	pdv -t -i $* $< | tail -n+2 | addpdvheader > $@
+	pdv -tZ -i $* $< | tail -n+2 | addpdvheader -Z > $@

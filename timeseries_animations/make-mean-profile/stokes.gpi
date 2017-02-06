@@ -1,0 +1,30 @@
+cumfile = arg1
+nbins   = arg2
+
+npulses = system("psrstat -c nsubint data/data.F | cut -f2 -d'='") + 0.0
+
+colnames = "I Q U V"
+colours  = "white yellow green cyan"
+labxpos  = "0.82 0.835 0.867 0.84"
+labypos  = "0.18 0.095 0.05 -0.01"
+
+# Easier to manipulate plot elements in parametric
+set parametric
+
+# Plot look and feel
+set xrange [0.7:1]
+set yrange [-0.02:0.25]
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+
+do for [l=1:words(colnames)] {
+    set label l word(colnames,l) \
+        at word(labxpos,l)+0.0, \
+           word(labypos,l)+0.0 \
+        tc rgb word(colours,l) font "Times,20"
+}
+
+# Plot the mean profiles
+plot for [s=1:words(colnames)] \
+     cumfile using (column("phasebin")/nbins):(4*column(word(colnames,s))/npulses) \
+             w l lw 2 lc rgb word(colours,s) notitle
+
