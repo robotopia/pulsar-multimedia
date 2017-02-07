@@ -4,9 +4,9 @@ FRAMES     = $(shell seq -w 0 $$(($(NFRAMES)-1)))
 ANIM1FILES = $(patsubst %,follow_%.png,$(FRAMES))
 ANIM2FILES = $(patsubst %,follow-with-ellipse_%.png,$(FRAMES))
 
-all: follow.gif follow-with-ellipse.gif static.png
+all: follow.gif follow-with-ellipse.gif pacurve.png
 
-static.png: static.gpi data/cumdata_1797.txt nbins
+pacurve.png: pacurve.gpi data/cumdata_1797.txt nbins
 	mygnuplot -o png -s 800,600 $(wordlist 1,2,$^) $(NBINS) > $@
 
 follow-with-ellipse.gif: $(ANIM2FILES)
