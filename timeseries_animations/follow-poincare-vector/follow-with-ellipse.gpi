@@ -1,0 +1,148 @@
+cumfile = arg1
+nframes = arg2
+frame   = arg3
+nbins   = arg4
+
+xlo = 0.7
+xhi = 1.0
+
+thisx = (xhi-xlo)*frame/nframes + xlo
+
+binno    = floor(thisx*nbins)
+npulses  = system("psrstat -c nsubint data/data.F | cut -f2 -d'='") + 0.0
+thisline = system("grep \"^0 0 ".binno."\" ".cumfile)
+thisI    = word(thisline, 4)
+thisQ    = word(thisline, 5)
+thisU    = word(thisline, 6)
+thisV    = word(thisline, 7)
+
+colnames = "I Q U V"
+colours  = "white yellow green cyan"
+labxpos  = "0.825 0.835 0.867 0.84"
+labypos  = "0.18  0.095 0.05 -0.01"
+
+Sx(phi,chi) = cos(2*chi)*cos(2*phi)
+Sy(phi,chi) = cos(2*chi)*sin(2*phi)
+Sz(phi,chi) = sin(2*chi)
+
+# Easier to manipulate plot elements in parametric
+set parametric
+
+# Plot look and feel
+unset border
+unset key
+unset tics
+
+boxw  = 0.002
+halfw = boxw/2.0
+
+set xrange [xlo:xhi]
+set yrange [-0.02:0.25]
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+set object 2 rectangle from first thisx-halfw, screen 0 \
+                         to first thisx+halfw, screen 1 front fc rgb "#77FF0000"
+
+do for [l=1:words(colnames)] {
+    set label l word(colnames,l) \
+        at word(labxpos,l)+0.0, \
+           word(labypos,l)+0.0 \
+        tc rgb word(colours,l) font "Times,20"
+}
+
+set multiplot
+
+# Plot the mean profiles
+set tmargin at screen 1.0
+set bmargin at screen 0.05
+set rmargin at screen 1.0
+set lmargin at screen 0.0
+
+plot for [s=1:words(colnames)] \
+     cumfile using (column("phasebin")/nbins):(4*column(word(colnames,s))/npulses) \
+             w l lw 2 lc rgb word(colours,s) notitle
+
+# Plot the accompanying Poincare sphere
+set tmargin at screen 1.0
+set bmargin at screen 0.5
+set rmargin at screen 0.9
+set lmargin at screen 0.7
+
+set xrange [-1:1]
+set yrange [-1:1]
+set zrange [-1:1]
+
+set xyplane 0
+
+set urange [0:pi]
+set vrange [-pi/2:pi/2]
+
+set isosamples 33
+
+set view 60,110
+unset colorbox
+set hidden3d front
+set view equal xyz
+
+unset object 1
+unset object 2
+unset label 1
+unset label 2
+unset label 3
+unset label 4
+
+set arrow 1 from 0,0,0 to 2.4,0,0 lw 2 lc rgb word(colours,2)
+set arrow 2 from 0,0,0 to 0,1.5,0 lw 2 lc rgb word(colours,3)
+set arrow 3 from 0,0,0 to 0,0,1.7 lw 2 lc rgb word(colours,4)
+
+len(Q,U,V)   = sqrt(Q**2 + U**2 + V**2)
+startbin     = 838
+endbin       = 906
+Qnorm(Q,U,V,binno) = (binno >= startbin && binno <= endbin) ? Q/len(Q,U,V) : 1/0
+Unorm(Q,U,V,binno) = (binno >= startbin && binno <= endbin) ? U/len(Q,U,V) : 1/0
+Vnorm(Q,U,V,binno) = (binno >= startbin && binno <= endbin) ? V/len(Q,U,V) : 1/0
+
+splot Sx(u,v),Sy(u,v),Sz(u,v) lc rgb "white"
+
+redcolor            = 255 << 16
+transparent(x)      = floor(255*x) << 24
+myred(binno,maxbin) = (binno < startbin || binno > maxbin) ? transparent(1) : \
+                      redcolor + transparent(-(binno - startbin + 0.0)/(maxbin - startbin))
+
+unset parametric
+splot cumfile u (Qnorm(column("Q"),column("U"),column("V"),column("phasebin"))): \
+                (Unorm(column("Q"),column("U"),column("V"),column("phasebin"))): \
+                (Vnorm(column("Q"),column("U"),column("V"),column("phasebin"))): \
+                (myred(column("phasebin"),binno)) \
+          w lines lw 4 lc rgb variable
+
+unset arrow 1
+unset arrow 2
+unset arrow 3
+
+# Plot the accompanying polarisation ellipse
+set tmargin at screen 0.5
+set bmargin at screen 0.25
+set rmargin at screen 0.9
+set lmargin at screen 0.7
+
+phi = atan2(thisQ, thisU)/2.0
+chi = asin(thisV/len(thisQ,thisU,thisV))/2.0
+
+set xrange [-1:1]
+set yrange [-1:1]
+set size ratio -1
+
+set parametric
+
+Px(phi,chi,phase) = cos(phi)*cos(phase) - tan(chi)*sin(phi)*sin(phase)
+Py(phi,chi,phase) = sin(phi)*cos(phase) + tan(chi)*cos(phi)*sin(phase)
+
+set trange [0:2*pi]
+set samples 361
+
+maxI = 81.0 # A rough guess
+szfact = thisI/maxI
+
+plot Px(phi,chi,t)*szfact,Py(phi,chi,t)*szfact lw 3 lc rgb "orange"
+
+unset multiplot
