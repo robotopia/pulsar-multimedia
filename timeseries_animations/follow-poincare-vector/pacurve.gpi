@@ -1,5 +1,10 @@
 cumfile = arg1
-nbins   = arg2
+nframes = arg2
+frame   = arg3
+nbins   = arg4
+
+clock = frame / (nframes-1.0)
+smth_clock = 3*clock**2 - 2*clock**3
 
 xlo = 0.7
 xhi = 1.0
@@ -7,9 +12,17 @@ xhi = 1.0
 npulses = system("psrstat -c nsubint data/data.F | cut -f2 -d'='") + 0.0
 
 colnames = "I Q U V"
-colours  = "white yellow green cyan"
 labxpos  = "0.825 0.835 0.867 0.84"
 labypos  = "0.18  0.095 0.05 -0.01"
+
+mywhite   = (floor(255*smth_clock) << 24) + (255 << 16) + (255 << 8) + (255)
+myyellow  = (floor(255*smth_clock) << 24) + (255 << 16) + (255 << 8) + (0)
+mygreen   = (floor(255*smth_clock) << 24) + (  0 << 16) + (255 << 8) + (0)
+mycyan    = (floor(255*smth_clock) << 24) + (  0 << 16) + (255 << 8) + (255)
+colours(n) = (n==1 ? mywhite : \
+             (n==2 ? myyellow : \
+             (n==3 ? mygreen : \
+             (n==4 ? mycyan : 0))))
 
 Sx(phi,chi) = cos(2*chi)*cos(2*phi)
 Sy(phi,chi) = cos(2*chi)*sin(2*phi)
@@ -34,7 +47,7 @@ do for [l=1:words(colnames)] {
     set label l word(colnames,l) \
         at word(labxpos,l)+0.0, \
            word(labypos,l)+0.0 \
-        tc rgb word(colours,l) font "Times,20"
+        tc rgb colours(l) font "Times,20"
 }
 
 set multiplot
@@ -47,12 +60,12 @@ set lmargin at screen 0.0
 
 plot for [s=1:words(colnames)] \
      cumfile using (column("phasebin")/nbins):(4*column(word(colnames,s))/npulses) \
-             w l lw 2 lc rgb word(colours,s) notitle
+             w l lw 2 lc rgb colours(s) notitle
 
 # Plot the PA curve
 set tmargin at screen 1.0
-set bmargin at screen 0.6
-set yrange [*:*]
+set bmargin at screen 0.6-(0.5*smth_clock)
+set yrange [-90:90]
 
 unset object 1
 unset label 1
@@ -61,7 +74,7 @@ unset label 3
 unset label 4
 
 set ytics (-60, -30, 0, 30, 60) offset 5 tc rgb "white"
-set grid lw 3 lc rgb "white"
+set grid lw 3 lc rgb mywhite
 
 set palette defined (0 "#000000", 0.1 "#FF7777", 1 "#FF7777")
 
