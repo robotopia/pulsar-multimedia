@@ -1,0 +1,73 @@
+cumfile = arg1
+nbins   = arg2
+
+xlo = 0.7
+xhi = 1.0
+
+npulses = system("psrstat -c nsubint data/data.F | cut -f2 -d'='") + 0.0
+
+colnames = "I Q U V"
+colours  = "white yellow green cyan"
+labxpos  = "0.825 0.835 0.867 0.84"
+labypos  = "0.18  0.095 0.05 -0.01"
+
+Sx(phi,chi) = cos(2*chi)*cos(2*phi)
+Sy(phi,chi) = cos(2*chi)*sin(2*phi)
+Sz(phi,chi) = sin(2*chi)
+
+# Easier to manipulate plot elements in parametric
+set parametric
+
+# Plot look and feel
+unset border
+unset key
+unset tics
+
+boxw  = 0.002
+halfw = boxw/2.0
+
+set xrange [xlo:xhi]
+set yrange [-0.02:0.25]
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+
+do for [l=1:words(colnames)] {
+    set label l word(colnames,l) \
+        at word(labxpos,l)+0.0, \
+           word(labypos,l)+0.0 \
+        tc rgb word(colours,l) font "Times,20"
+}
+
+set multiplot
+
+# Plot the mean profiles
+set tmargin at screen 0.8
+set bmargin at screen 0.05
+set rmargin at screen 1.0
+set lmargin at screen 0.0
+
+plot for [s=1:words(colnames)] \
+     cumfile using (column("phasebin")/nbins):(4*column(word(colnames,s))/npulses) \
+             w l lw 2 lc rgb word(colours,s) notitle
+
+# Plot the PA curve
+set tmargin at screen 1.0
+set bmargin at screen 0.6
+set yrange [*:*]
+
+unset object 1
+unset label 1
+unset label 2
+unset label 3
+unset label 4
+
+set ytics (-60, -30, 0, 30, 60) offset 5 tc rgb "white"
+set grid lw 3 lc rgb "white"
+
+set palette defined (0 "#000000", 0.1 "#FF7777", 1 "#FF7777")
+
+plot cumfile using (column("phasebin")/nbins): \
+                   (column("PA") == 0 && column("PAerr") == 0 ? 1/0 : column("PA")): \
+                   (column("I")) \
+             with points pt 7 ps 0.5 lw 2 lc palette
+
+unset multiplot
