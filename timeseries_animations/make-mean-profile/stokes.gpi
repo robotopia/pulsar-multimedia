@@ -1,19 +1,25 @@
 cumfile = arg1
 nbins   = arg2
 
+xlo = 0.7
+xhi = 1.0
+
+ylo = -0.0006
+yhi =  0.0015
+
 npulses = system("psrstat -c nsubint data/data.F | cut -f2 -d'='") + 0.0
 
 colnames = "I Q U V"
 colours  = "white yellow green cyan"
 labxpos  = "0.82 0.835 0.867 0.84"
-labypos  = "0.18 0.095 0.05 -0.01"
+labypos  = sprintf("%f %f %f %f", yhi*0.65, yhi*0.35, -yhi*0.2, yhi*0.03)
 
 # Easier to manipulate plot elements in parametric
 set parametric
 
 # Plot look and feel
-set xrange [0.7:1]
-set yrange [-0.02:0.25]
+set xrange [xlo:xhi]
+set yrange [ylo:yhi]
 set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
 
 set tmargin at screen 1.0

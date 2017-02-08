@@ -9,11 +9,14 @@ smth_clock = 3*clock**2 - 2*clock**3
 xlo = 0.7
 xhi = 1.0
 
+ylo = -0.0006
+yhi =  0.0015
+
 npulses = system("psrstat -c nsubint data/data.F | cut -f2 -d'='") + 0.0
 
 colnames = "I Q U V"
 labxpos  = "0.825 0.835 0.867 0.84"
-labypos  = "0.18  0.095 0.05 -0.01"
+labypos  = sprintf("%f %f %f %f", yhi*0.65, yhi*0.35, -yhi*0.2, yhi*0.03)
 
 mywhite   = (floor(255*smth_clock) << 24) + (255 << 16) + (255 << 8) + (255)
 myyellow  = (floor(255*smth_clock) << 24) + (255 << 16) + (255 << 8) + (0)
@@ -40,7 +43,7 @@ boxw  = 0.002
 halfw = boxw/2.0
 
 set xrange [xlo:xhi]
-set yrange [-0.02:0.25]
+set yrange [ylo:yhi]
 set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
 
 do for [l=1:words(colnames)] {

@@ -1,5 +1,5 @@
 # Input files and parameters
-ARCHIVE = $(shell findrepo "PKS.*J0630")/archive/J0630-2834_1.ar
+ARCHIVE = $(shell findrepo "PKS.*J0630")/archive/J0630-2834.F
 NSUBINT = $(shell psrstat -c nsubint $(ARCHIVE) | cut -f2 -d'=')
 SUBINTS = $(shell seq -w 0 $$(($(NSUBINT)-1)))
 
@@ -14,8 +14,7 @@ cumdata: $(CUMFILES)
 intdata: $(INTFILES)
 
 data.F: $(ARCHIVE)
-	pam -u ./ -e F -F $<
-	mv $(basename $(notdir $<)).F $@
+	ln -s $< $@
 
 cumdata_%.F: data.F
 	pam --settsub $$((10#$*+1)) -e F$* $<

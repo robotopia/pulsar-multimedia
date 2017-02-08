@@ -1,0 +1,74 @@
+cumfile = arg1
+nbins   = arg2
+
+xoffset = -0.85
+
+xlo = (0.7+xoffset)*360
+xhi = (1.0+xoffset)*360
+
+ylo = -90
+yhi =  90
+
+# Plot look and feel
+unset border
+unset key
+unset tics
+
+boxw  = 0.002
+halfw = boxw/2.0
+
+set xrange [xlo:xhi]
+set yrange [ylo:yhi]
+set samples 360
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+set grid lw 2 lc rgb "white"
+
+# Plot the PA curve
+set tmargin at screen 1.0
+set bmargin at screen 0.1
+set lmargin at screen 0.0
+set rmargin at screen 1.0
+
+unset label 1
+unset label 2
+unset label 3
+unset label 4
+
+set ytics 30 offset 4 tc rgb "white"
+set xtics 10 tc rgb "white"
+set xlabel "Rotation phase (°)" tc rgb "white"
+
+mod(x,m) = x - floor(x/(m+0.0))*m
+cmod(x,m) = mod(x+m/2.0,m)-m/2.0
+
+# "Fit" (retrieved from some paper)
+PA(alpha, zeta, phi) = atan2(sin(alpha)*sin(phi), (sin(zeta)*cos(alpha) - cos(zeta)*sin(alpha)*cos(phi)))
+
+# Move fitted line in place
+leftshift = 150.0/1024.0 # (phases)
+downshift = 40.0 # (degrees)
+
+# Fit functions (phi = rad, leftshift = phases, downshift = deg)
+alpha1 = 70*pi/180; zeta1 = 58*pi/180;
+alpha2 = 11*pi/180; zeta2 =  8*pi/180;
+PAfit1(phi,leftshift,downshift) = cmod(PA(alpha1, zeta1, phi+leftshift*2*pi)*180/pi-downshift,180)
+PAfit2(phi,leftshift,downshift) = cmod(PA(alpha2, zeta2, phi+leftshift*2*pi)*180/pi-downshift,180)
+
+# Put labels with fit info
+set label 1 sprintf("α = %d°", alpha1*180/pi+0.5) at -30,-30 center tc rgb "yellow" font ",20"
+set label 2 sprintf("ζ = %d°",  zeta1*180/pi+0.5) at -30,-40 center tc rgb "yellow" font ",20"
+set label 3 sprintf("α = %d°", alpha2*180/pi+0.5) at  30,-30 center tc rgb "green"  font ",20"
+set label 4 sprintf("ζ = %d°",  zeta2*180/pi+0.5) at  30,-40 center tc rgb "green"  font ",20"
+
+
+plot x<15 ? PAfit1((x/360.0-xoffset)*2*pi, leftshift, downshift) : 1/0 \
+             lw 2 lc rgb "yellow", \
+     x>16 ? PAfit1((x/360.0-xoffset)*2*pi, leftshift, downshift) : 1/0 \
+             lw 2 lc rgb "yellow", \
+     x<17 ? PAfit2((x/360.0-xoffset)*2*pi, leftshift, downshift) : 1/0 \
+             lw 2 lc rgb "green", \
+     x>18 ? PAfit2((x/360.0-xoffset)*2*pi, leftshift, downshift) : 1/0 \
+             lw 2 lc rgb "green", \
+     cumfile using (((column("phasebin")/nbins)+xoffset)*360.0): \
+                   (column("PA") == 0 && column("PAerr") == 0 ? 1/0 : column("PA")) \
+             with points pt 7 ps 0.5 lw 2 lc rgb "#FF7777"

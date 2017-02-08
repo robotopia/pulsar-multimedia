@@ -52,7 +52,7 @@ set xrange [0:10]
 ylo = interp(clock_vw, -2.0, -1.0)
 yhi = interp(clock_vw,  1.0, -0.65)
 set yrange [ylo:yhi]
-set zrange [-0.02:0.25]
+set zrange [-2.20411e-05:0.000674308]
 set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
 set grid lc rgb "white"
 set xyplane 0
@@ -79,6 +79,6 @@ splot \
      cumfile \
           using (cos(rot_angle)*column("phasebin")/nbins): \
                 (-sin(rot_angle)*column("phasebin")/nbins): \
-                (pulsenumber > 0 ? interp(clock_vw,1,4)*column("I")/npulses : 1/0) \
+                (pulsenumber > 0 ? interp(clock_vw,1,2.5)*column("I")/npulses : 1/0) \
           w l lw 2 lc rgb "red" notitle
 

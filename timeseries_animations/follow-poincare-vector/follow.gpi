@@ -6,6 +6,9 @@ nbins   = arg4
 xlo = 0.7
 xhi = 1.0
 
+ylo = -0.0006
+yhi =  0.0015
+
 thisx = (xhi-xlo)*frame/nframes + xlo
 
 binno   = floor(thisx*nbins)
@@ -13,8 +16,8 @@ npulses = system("psrstat -c nsubint data/data.F | cut -f2 -d'='") + 0.0
 
 colnames = "I Q U V"
 colours  = "white yellow green cyan"
-labxpos  = "0.825 0.835 0.867 0.84"
-labypos  = "0.18  0.095 0.05 -0.01"
+labxpos  = "0.825 0.835 0.87 0.84"
+labypos  = sprintf("%f %f %f %f", yhi*0.65, yhi*0.35, -yhi*0.2, yhi*0.03)
 
 Sx(phi,chi) = cos(2*chi)*cos(2*phi)
 Sy(phi,chi) = cos(2*chi)*sin(2*phi)
@@ -32,7 +35,7 @@ boxw  = 0.002
 halfw = boxw/2.0
 
 set xrange [xlo:xhi]
-set yrange [-0.02:0.25]
+set yrange [ylo:yhi]
 set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
 set object 2 rectangle from first thisx-halfw, screen 0 \
                          to first thisx+halfw, screen 1 front fc rgb "#77FF0000"
