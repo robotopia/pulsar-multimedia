@@ -6,4 +6,4 @@ current.gif: $(PNGS)
 	convert -loop 0 -delay 3 current_??.png $@
 
 current_%.png: animate.gpi 3dpulsar.gpi
-	mygnuplot -o png -s 1000,500 $< $(NFRAMES) $* > $@
+	mygnuplot -o png -s 800,800 $< $(NFRAMES) $* > $@
