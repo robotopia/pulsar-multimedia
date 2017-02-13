@@ -1,0 +1,23 @@
+nframes  = arg1
+frame    = arg2
+
+alpha = 45*pi/180;
+zeta  = 50*pi/180;
+phase = 0;
+clock = frame / (nframes - 1.0); # Expecting frames to start from 0
+set angle radians
+
+# Set global background
+set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black" behind
+set lt 1 lc rgb "white"
+set lt 2 lc rgb "#77FF00FF" # Semitransparent magenta
+
+set bmargin at screen 0
+set tmargin at screen 1
+
+set lmargin at screen 0
+set rmargin at screen 1
+
+set view 90,45,1,1
+
+load '3dpulsar.gpi'
