@@ -1,0 +1,64 @@
+# Assumes "clock", "alpha", "zeta", and "phase" are all defined
+
+unset colorbox
+unset key
+unset border
+unset tics
+
+set view equal xyz
+set hidden3d front
+
+set parametric
+set isosamples 33
+
+set urange [0:pi]
+set vrange [0:2*pi]
+
+set xrange [-3.0:3.0]
+set yrange [-3.0:3.0]
+set zrange [-3.0:3.0]
+
+# Clock function for smooth animation
+smth_clock = sin(clock*pi)**2
+
+# Rotation to get from rotation to magnetic frame:
+magx(x,y,z) = cos(phase)*cos(alpha)*x - sin(phase)*y + cos(phase)*sin(alpha)*z
+magy(x,y,z) = sin(phase)*cos(alpha)*x + cos(phase)*y + sin(phase)*sin(alpha)*z
+magz(x,y,z) =           -sin(alpha)*x                +            cos(alpha)*z
+
+# Azimuth sweepback that depends on radial distance
+sweep(r) = smth_clock * maxsweep * r/R
+maxsweep = pi/4 # radians
+
+wdist(x,y) = sqrt(x**2 + y**2)
+rotx(x,y,phi) = cos(phi)*x - sin(phi)*y
+roty(x,y,phi) = sin(phi)*x + cos(phi)*y
+sweptx(x,y,z) = rotx(magx(x,y,z),magy(x,y,z),sweep(wdist(x,y)))
+swepty(x,y,z) = roty(magx(x,y,z),magy(x,y,z),sweep(wdist(x,y)))
+sweptz(x,y,z) = magz(x,y,z)
+
+# Colat/Long coords --> Cartesian
+xx(u, v) = sin(u) * cos(v)
+yy(u, v) = sin(u) * sin(v)
+zz(u, v) = cos(u)
+
+# Max distance from origin for dipole field lines
+R  = 3.0
+rp = 0.6 # pulsar radius
+
+# Formulae for field lines
+r(th) = R * sin(th)**2         # (th = colat)
+rx(th,phi) = r(th)*xx(th,phi) # (0 < u=th < pi; phi = azimuth)
+ry(th,phi) = r(th)*yy(th,phi) #              "
+rz(th,phi) = r(th)*zz(th,phi) #              "
+
+sigma(phi) = cmod(atan2(sin(zeta)*sin(phi), sin(alpha)*cos(zeta) - cos(alpha)*sin(zeta)*cos(phi)) + pi,2*pi)
+
+splot rp*magx(xx(u,v),yy(u,v),zz(u,v)), \
+      rp*magy(xx(u,v),yy(u,v),zz(u,v)), \
+      rp*magz(xx(u,v),yy(u,v),zz(u,v)), \
+      for [lineno=0:7] \
+          sweptx(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
+          swepty(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
+          sweptz(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)) lt 2
+
