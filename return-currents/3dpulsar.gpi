@@ -1,4 +1,5 @@
-# Assumes "clock", "alpha", "zeta", and "phase" are all defined
+# Assumes "clock", "return", "alpha", "zeta", and "phase" are all defined
+# "return" is expected to have value "yes" if return current should be plotted
 
 unset colorbox
 unset key
@@ -46,6 +47,8 @@ zz(u, v) = cos(u)
 
 # Formulae for field lines
 r(th) = R * sin(th)**2         # (th = colat)
+
+# Conversion polar --> cartesian (incl. radius)
 rx(th,phi,r) = r*xx(th,phi) # (0 < u=th < pi; phi = azimuth)
 ry(th,phi,r) = r*yy(th,phi) #              "
 rz(th,phi,r) = r*zz(th,phi) #              "
@@ -54,24 +57,65 @@ rz(th,phi,r) = r*zz(th,phi) #              "
 th(r,th0,r0) = asin(sqrt(r/r0 * sin(th0)**2))
 pr(now,starttime) = (now-starttime >= 0 && now-starttime <= 1) ? \
                        rp + maxdist*speed*(now-starttime) : 1/0
+er(now,starttime) = (now-starttime >= 0 && now-starttime <= 1) ? \
+                       maxdist - maxdist*speed*(now-starttime) : 1/0
 
 sigma(phi) = cmod(atan2(sin(zeta)*sin(phi), sin(alpha)*cos(zeta) - cos(alpha)*sin(zeta)*cos(phi)) + pi,2*pi)
 
-splot rp*magx(xx(u,v),yy(u,v),zz(u,v)), \
-      rp*magy(xx(u,v),yy(u,v),zz(u,v)), \
-      rp*magz(xx(u,v),yy(u,v),zz(u,v)), \
-      for [lineno=0:7] \
-          magx(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))), \
-          magy(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))), \
-          magz(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))) lt 2, \
-      $random using \
-          (magx(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
-                ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
-                rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))): \
-          (magy(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
-                ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
-                rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))): \
-          (magz(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
-                ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
-                rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))) \
-           w p pt 7 ps 0.2 lc rgb "yellow"
+if (return eq "yes") {
+    
+    # Colatitude of footprint of last closed field line
+    lastth = th(rp,pi/2,R)
+
+    splot rp*magx(xx(u,v),yy(u,v),zz(u,v)), \
+          rp*magy(xx(u,v),yy(u,v),zz(u,v)), \
+          rp*magz(xx(u,v),yy(u,v),zz(u,v)), \
+          for [lineno=0:7] \
+              magx(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))), \
+              magy(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))), \
+              magz(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))) lt 2, \
+          $random using \
+              (magx(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))): \
+              (magy(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))): \
+              (magz(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))) \
+               w p pt 7 ps 0.2 lc rgb "yellow", \
+          $random using \
+              (magx(rx(th(er(clock,$1),lastth,rp),$3,er(clock,$1)), \
+                    ry(th(er(clock,$1),lastth,rp),$3,er(clock,$1)), \
+                    rz(th(er(clock,$1),lastth,rp),$3,er(clock,$1)))): \
+              (magy(rx(th(er(clock,$1),lastth,rp),$3,er(clock,$1)), \
+                    ry(th(er(clock,$1),lastth,rp),$3,er(clock,$1)), \
+                    rz(th(er(clock,$1),lastth,rp),$3,er(clock,$1)))): \
+              (magz(rx(th(er(clock,$1),lastth,rp),$3,er(clock,$1)), \
+                    ry(th(er(clock,$1),lastth,rp),$3,er(clock,$1)), \
+                    rz(th(er(clock,$1),lastth,rp),$3,er(clock,$1)))) \
+               w p pt 7 ps 0.2 lc rgb "cyan"
+
+} else { 
+
+    splot rp*magx(xx(u,v),yy(u,v),zz(u,v)), \
+          rp*magy(xx(u,v),yy(u,v),zz(u,v)), \
+          rp*magz(xx(u,v),yy(u,v),zz(u,v)), \
+          for [lineno=0:7] \
+              magx(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))), \
+              magy(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))), \
+              magz(rx(u,lineno*pi/4,r(u)),ry(u,lineno*pi/4,r(u)),rz(u,lineno*pi/4,r(u))) lt 2, \
+          $random using \
+              (magx(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))): \
+              (magy(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))): \
+              (magz(rx(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    ry(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)), \
+                    rz(th(pr(clock,$1),$2,rp),$3,pr(clock,$1)))) \
+               w p pt 7 ps 0.2 lc rgb "yellow"
+
+}
