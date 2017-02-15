@@ -1,0 +1,22 @@
+# Clue 4: PA sweep independent of wavelength
+
+load "common.gpi"
+
+singlepulsewidth = 0.1
+noiselevel       = 0.01
+
+single(x) = f( 0   ,singlepulsewidth  ,x)     + \
+            f(-0.1 ,singlepulsewidth/2,x)/3.0 + \
+            f( 0.15,singlepulsewidth/2,x)/5.0 + \
+            invnorm(rand(0)) * noiselevel
+
+alpha = 45*pi/180
+zeta  = 50*pi/180
+
+set samples 1000
+set xrange [-1:1]
+set yrange [-0.2:3]
+
+mycolor = hsv2rgb(clock,1,1)
+plot single(x) lc rgb mycolor, \
+     PAsweep(alpha, zeta, x*pi)/pi + 1.8 lc rgb "yellow"

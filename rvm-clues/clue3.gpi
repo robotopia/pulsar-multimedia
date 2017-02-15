@@ -1,0 +1,38 @@
+# Clue 3 = Profile evolution
+# Assumes "clock" and "mytc" are already defined
+
+load "common.gpi"
+
+leftmu  = sin_clock(clock)*-0.15-0.1
+rightmu = sin_clock(clock)*0.2+0.1
+
+singlepulsewidth = 0.1
+noiselevel       = 0.01
+
+#set palette model HSV
+#set palette functions gray,1,1
+
+double(x) = f( leftmu,singlepulsewidth/1.5,x)     + \
+            f(rightmu,singlepulsewidth    ,x)/1.5 + \
+            invnorm(rand(0)) * noiselevel
+
+set xrange [-1:1]
+set yrange [-0.2:2]
+#set cbrange [0:1]
+
+mycolor = hsv2rgb((1-sin_clock(clock))*0.7,1,1)
+
+set label 1 "Δφ ∝ ν^{-1/4}" at -0.5,1.4 center front font ",20" tc rgb mytc
+set label 2 "Δφ"            at (leftmu+rightmu)/2.0,1.2 center front font ",14" tc rgb mytc
+set arrow 1 from leftmu ,1 to rightmu,1    heads  front lt 1
+set arrow 2 from leftmu ,0 to leftmu ,1.05 nohead front lt 2
+set arrow 3 from rightmu,0 to rightmu,1.05 nohead front lt 2
+
+plot double(x) lc rgb mycolor
+
+unset label 1
+unset label 2
+
+unset arrow 1
+unset arrow 2
+unset arrow 3

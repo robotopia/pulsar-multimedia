@@ -1,0 +1,18 @@
+npulses = 20
+noiselevel = 0.03
+pulsewidth = 0.03
+
+gaussian(mu,sig,x) = 1/sqrt(2*sig**2*pi) * exp(-(x-mu)**2/(2*sig**2))
+f(mu,sig,x)        = gaussian(mu,sig,x) / gaussian(mu,sig,mu)
+
+set angles radians
+
+smth_clock(x) = 3*x**2 - 2*x**3
+sin_clock(x)  = sin(x*pi)**2
+
+# Some general modulus functions
+mod(x,m) = x - floor(1.0*x/m)*m
+cmod(x,m) = mod(x-0.00001+m/2.0,m)-m/2.0 # The "-0.00001" is to ensure m/2 < x <= m/2
+
+# RVM P.A. curve function
+PAsweep(a,z,p) = cmod(atan2(sin(a)*sin(p), sin(z)*cos(a) - cos(z)*sin(a)*cos(p)),2*pi)

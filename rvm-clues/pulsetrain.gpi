@@ -1,0 +1,19 @@
+# A noisy pulse train
+
+outfile = arg1
+
+load "common.gpi"
+
+rands      = system("cat rands.txt")
+
+pulse(n,x)         = f(n,pulsewidth,x)
+pulsetrain(n,x)    = (n==0) ? \
+                       pulse(n-0.5,x)*word(rands,n) : \
+                       pulse(n-0.5,x)*word(rands,n) + pulsetrain(n-1,x)
+noisytrain(n,x)    = pulsetrain(n,x) + invnorm(rand(0)) * noiselevel
+
+set samples 1000
+
+set table outfile
+plot [0:npulses] noisytrain(npulses,x) notitle
+

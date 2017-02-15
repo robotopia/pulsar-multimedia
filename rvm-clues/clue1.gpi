@@ -1,0 +1,18 @@
+# Clue 1 = small duty cycle
+# Assumes "clock" and "pulsetrain" are defined
+
+load "common.gpi"
+
+central = floor(clock*10) + 5.5
+
+set arrow 1 from central,0.2 to central+1,0.2 heads lt 2
+set arrow 2 from central-pulsewidth-0.3,0.1 to central-pulsewidth-0.02,0.1 lt 2
+set arrow 3 from central+pulsewidth+0.3,0.1 to central+pulsewidth+0.02,0.1 lt 2
+
+set xrange [clock*npulses/2.0:(clock+1.0)*npulses/2.0]
+set yrange [-0.2:1.2]
+plot pulsetrain with lines
+
+unset arrow 1
+unset arrow 2
+unset arrow 3

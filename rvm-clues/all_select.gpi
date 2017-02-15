@@ -1,0 +1,122 @@
+# Layout of all four "clues" in a rectangle
+# Assumes "select" and "globalclock" are defined
+
+# Functions for turning quadrant number into left,right,top,bottom screen coords
+mod(x,m) = x - floor(1.0*x/m)*m
+mgn  = 0.05
+wdth = (1.0-3.0*mgn)/2.0
+hght = (0.95-3.0*mgn)/2.0
+
+qx(n) = mod(n-1.0,2.0)            # origin at bottom left, start count at 0
+qy(n) = (1.0-floor((n-1.0)/2.0))  # origin at bottom left, start count at 0
+
+ql(n) = (qx(n)+1)*mgn + qx(n)*wdth
+qr(n) = ql(n) + wdth
+qb(n) = (qy(n)+1)*mgn + qy(n)*hght
+qt(n) = qb(n) + hght
+
+# Select tells which quadrant will be drawn with a lighter colored background
+# Valid values are: 1,2,3,4. Any other value will simply not draw a background
+# 0 = none,
+#           -----
+#           |1|2|
+#           |-+-|
+#           |3|4|
+#           -----
+
+if (select >= 1 && select <= 4) {
+    set object 2 rectangle from screen ql(select),qb(select) \
+                           to   screen qr(select),qt(select) \
+        fc rgb "#222222" behind
+}
+
+# Global look and feel
+set lt 1 lw 2 lc rgb "white"
+set lt 2 lw 2 lc rgb "yellow"
+set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black" behind
+unset key
+set border lt 1
+set style arrow 1 lt 1
+mytc = "white"
+titletc = "#aaffaa"
+unset tics
+set label 20 "Some general pulsar signal properties" at screen 0.5,0.95 center font ",32" tc rgb mytc
+
+# Draw the plots
+set multiplot
+
+    # Plot 1:
+    set lmargin at screen ql(1)
+    set rmargin at screen qr(1)
+    set bmargin at screen qb(1)
+    set tmargin at screen qt(1)
+
+    if (select == 1) {
+        set label 10 "1. Duty cycle" at screen (ql(1)+qr(1))/2.0,qt(1)-0.05 front center tc rgb titletc font ",20"
+        clock = globalclock
+    } else {
+        clock = 0.0
+    }
+
+    load "clue1.gpi"
+
+    unset label 10
+
+    # (Unset select rectangles)
+    unset object 1
+    if (select >= 1 && select <= 4) {
+        unset object 2
+    }
+
+    # Plot 2:
+    set lmargin at screen ql(2)
+    set rmargin at screen qr(2)
+    set bmargin at screen qb(2)
+    set tmargin at screen qt(2)
+
+    if (select == 2) {
+        set label 10 "2. Profile morphology" at screen (ql(2)+qr(2))/2.0,qt(2)-0.05 front center tc rgb titletc font ",20"
+        clock = globalclock
+    } else {
+        clock = 0.0
+    }
+
+    load "clue2.gpi"
+
+    unset label 10
+
+    # Plot 3:
+    set lmargin at screen ql(3)
+    set rmargin at screen qr(3)
+    set bmargin at screen qb(3)
+    set tmargin at screen qt(3)
+
+    if (select == 3) {
+        set label 10 "3. Component separation" at screen (ql(3)+qr(3))/2.0,qt(3)-0.05 front center tc rgb titletc font ",20"
+        clock = globalclock
+    } else {
+        clock = 0.0
+    }
+
+    load "clue3.gpi"
+
+    unset label 10
+
+    # Plot 4:
+    set lmargin at screen ql(4)
+    set rmargin at screen qr(4)
+    set bmargin at screen qb(4)
+    set tmargin at screen qt(4)
+
+    if (select == 4) {
+        set label 10 "4. P.A. independent of frequency" at screen (ql(4)+qr(4))/2.0,qt(4)-0.05 front center tc rgb titletc font ",20"
+        clock = globalclock
+    } else {
+        clock = 0.0
+    }
+
+    load "clue4.gpi"
+
+    unset label 10
+
+unset multiplot
