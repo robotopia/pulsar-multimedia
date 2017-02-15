@@ -8,5 +8,5 @@ clock   = (frame+0.0) / nframes
 outfile = sprintf("%s%02d.png", basename, frame)
 set output outfile
 
-load "all.gpi"
+load "title_all.gpi"
 

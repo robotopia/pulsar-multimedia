@@ -99,7 +99,7 @@ set multiplot
     set label 5 "slope" at eq2x-0.12,eq2y-0.04 center tc rgb "white" font ",12"
     set label 6 "= " at eq2x,eq2y right tc rgb "white" font ",12"
     set label 7 "sin(α)" at eq2rmid,eq2y+fracheight center tc rgb "white" font ",12"
-    set label 8 "cos(α+ζ)" at eq2rmid,eq2y-fracheight center tc rgb "white" font ",12"
+    set label 8 "sin(ζ-α)" at eq2rmid,eq2y-fracheight center tc rgb "white" font ",12"
 
     # Plot the fraction lines
     unset parametric

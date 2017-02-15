@@ -39,7 +39,7 @@ ry(th,phi) = r(th)*yy(th,phi)  #              "
 rz(th,phi) = r(th)*zz(th,phi)  #              "
 
 sigma(phi) = cmod(atan2(sin(zeta)*sin(phi), sin(alpha)*cos(zeta) - cos(alpha)*sin(zeta)*cos(phi)) + pi,2*pi)
-#PArvm(phi) = cmod(atan2(sin(a)*sin(phi), sin(z)*cos(a) - cos(z)*sin(a)*cos(phi)),2*pi)
+PArvm(phi) = cmod(atan2(sin(alpha)*sin(phi), sin(zeta)*cos(alpha) - cos(zeta)*sin(alpha)*cos(phi)),2*pi)
 
 
 if (plotactivefieldline eq "yes") {
@@ -51,9 +51,9 @@ if (plotactivefieldline eq "yes") {
               magx(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
               magy(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)), \
               magz(rx(u,lineno*pi/4),ry(u,lineno*pi/4),rz(u,lineno*pi/4)) lt 2, \
-          magx(rx(u,PArvm(phase)),ry(u,PArvm(phase)),rz(u,PArvm(phase))), \
-          magy(rx(u,PArvm(phase)),ry(u,PArvm(phase)),rz(u,PArvm(phase))), \
-          magz(rx(u,PArvm(phase)),ry(u,PArvm(phase)),rz(u,PArvm(phase))) \
+          magx(rx(u,sigma(phase)),ry(u,sigma(phase)),rz(u,sigma(phase))), \
+          magy(rx(u,sigma(phase)),ry(u,sigma(phase)),rz(u,sigma(phase))), \
+          magz(rx(u,sigma(phase)),ry(u,sigma(phase)),rz(u,sigma(phase))) \
               lc rgb transyellow(window(cmod(phase,2*pi)))
 
 } else {

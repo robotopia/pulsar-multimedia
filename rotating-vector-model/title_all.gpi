@@ -1,0 +1,75 @@
+# Assumes "alpha", "zeta", and "clock" are all defined
+# (0 < alpha < pi)
+# (0 <  zeta < pi)
+# (0 < clock < 1 )
+
+phase = clock*2*pi
+set angle radians
+
+# A function for when to turn on the yellow lines
+window(t) = exp(-2*pi*t**2)
+
+# Equivalent to a palette map from transparent to yellow
+transyellow(t) = (floor(255*(1-t)) << 24) + (255 << 16) + (255 << 8) + 0
+
+# Some general modulus functions
+mod(x,m) = x - floor(1.0*x/m)*m
+cmod(x,m) = mod(x-0.00001+m/2.0,m)-m/2.0 # The "-0.00001" is to ensure m/2 < x <= m/2
+
+set lt 1 lc rgb "white"
+set lt 2 lc rgb "#77FF00FF" # Semitransparent magenta
+
+set multiplot
+
+    # Set global background
+    set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black" behind
+
+    # Logos
+    logowidth  = 1.0
+    logoheight = logowidth*289.0/1800.0 + 0.1 # Not sure why I had to add 0.1 to make size look right
+    set tmargin at screen logoheight
+    set bmargin at screen 0.0
+    set lmargin at screen 0.0
+    set rmargin at screen logowidth
+
+    set xrange [*:*] noextend
+    set yrange [*:*] noextend
+    set size ratio -1
+
+    logo = system("findrepo logo")."/all-official.jpg"
+    plot logo binary filetype=jpeg with rgbimage
+
+    # Unset global background
+    unset object 1
+
+    # Title words
+    set label 1 "The Rotating Vector Model" \
+                at screen 0.5,0.93 center font ",40" tc rgb "white"
+    set label 2 "Sam McSweeney" \
+                at screen 0.5,0.84 center font ",32" tc rgb "white"
+    set label 3 "Dr Ramesh Bhat, Dr Steven Tremblay, Dr Avinash Deshpande" \
+                at screen 0.5,0.77 center font ",20" tc rgb "white"
+
+    set margins 0,1,0,1
+    set xrange [0:1]
+    set yrange [0:1]
+    unset key
+    plot 0.9 lw 3 lc rgb "light-blue"
+
+    unset label 1
+    unset label 2
+    unset label 3
+
+    # Centrepiece = rotating pulsar model
+    set tmargin at screen 0.9
+    set bmargin at screen 0.0
+    set lmargin at screen 0.1
+    set rmargin at screen 0.9
+
+    plotactivefieldline = "yes"
+
+    set view zeta*180/pi,90,1,1
+
+    load '3dpulsar.gpi'
+
+unset multiplot
