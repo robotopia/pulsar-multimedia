@@ -1,0 +1,8 @@
+nframes = arg1
+frame   = arg2
+select  = arg3
+pulsetrain = arg4
+
+globalclock = frame / (nframes*1.0)
+
+load "all_select.gpi"

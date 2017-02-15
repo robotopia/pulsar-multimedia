@@ -68,7 +68,7 @@ set multiplot
         unset object 2
     }
 
-    # Plot 2:
+    # Plot 2: (unanimated)
     set lmargin at screen ql(2)
     set rmargin at screen qr(2)
     set bmargin at screen qb(2)
@@ -76,9 +76,6 @@ set multiplot
 
     if (select == 2) {
         set label 10 "2. Profile morphology" at screen (ql(2)+qr(2))/2.0,qt(2)-0.05 front center tc rgb titletc font ",20"
-        clock = globalclock
-    } else {
-        clock = 0.0
     }
 
     load "clue2.gpi"

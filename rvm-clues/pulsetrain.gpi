@@ -1,7 +1,5 @@
 # A noisy pulse train
 
-outfile = arg1
-
 load "common.gpi"
 
 rands      = system("cat rands.txt")
@@ -12,8 +10,19 @@ pulsetrain(n,x)    = (n==0) ? \
                        pulse(n-0.5,x)*word(rands,n) + pulsetrain(n-1,x)
 noisytrain(n,x)    = pulsetrain(n,x) + invnorm(rand(0)) * noiselevel
 
-set samples 1000
+nsamps = 2000
+set samples nsamps
 
-set table outfile
-plot [0:npulses] noisytrain(npulses,x) notitle
+set print $pulses
+do for [i=1:nsamps] {
+    X = (i-1.0)*npulses/nsamps
+    print sprintf("%f",noisytrain(npulses,X))
+}
+
+set print $repeated
+print $pulses
+print $pulses
+
+set table
+plot $repeated u ($0*npulses*1.0/nsamps):1 with table
 
