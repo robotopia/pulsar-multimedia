@@ -1,0 +1,59 @@
+# Toy model of curvature emission in pulsar setting
+# Assumes "clock" has been defined
+
+# Pulsar radius
+rp = 0.6
+
+# Max distance from origin for dipole field lines
+R  = 5.0
+
+# Speed along field line
+speed = 1.0 # half-circuits per clock
+
+# Start times of (three) particles
+p1t0 = -0.5 # (So it's already along its trajectory at the start of the animation)
+p2t0 = 0
+p3t0 = 0.5
+
+# Formulae for field lines
+r(th) = R * sin(th)**2       # (th = colat )
+th(r) = asin(sqrt(r/R))      # (r  = radius)
+
+# Formulas for position as a function of time (motion of particles)
+rpart(clock, starttime) = (clock - starttime >= 0 && \
+                           clock - starttime <= 1) ? \
+                          R*speed*(clock - starttime) : \
+                          1/0
+thpart(clock, starttime) = th(rpart(clock, starttime))
+
+# Colat/Long coords --> Cartesian
+xx(u, v) = sin(u) * cos(v)
+yy(u, v) = sin(u) * sin(v)
+zz(u, v) = cos(u)
+
+set parametric
+set isosamples 45
+
+set view equal xyz
+set view 65,52,2,1
+set hidden3d front
+set xyplane 0
+
+set urange [0:pi]
+set vrange [0:2*pi]
+
+set xrange [-0.7:4.0]
+set yrange [-1.7:2.2]
+set zrange [-0.6:2.1]
+
+splot rp*xx(u,v),   rp*yy(u,v),   rp*zz(u,v) lt 1, \
+      r(u)*xx(u,0), r(u)*yy(u,0), r(u)*zz(u,0) lt 2, \
+      rpart(clock,p1t0)*xx(thpart(clock,p1t0),0), \
+      rpart(clock,p1t0)*yy(thpart(clock,p1t0),0), \
+      rpart(clock,p1t0)*zz(thpart(clock,p1t0),0) w p pt 7 ps 1 lt 3, \
+      rpart(clock,p2t0)*xx(thpart(clock,p2t0),0), \
+      rpart(clock,p2t0)*yy(thpart(clock,p2t0),0), \
+      rpart(clock,p2t0)*zz(thpart(clock,p2t0),0) w p pt 7 ps 1 lt 3, \
+      rpart(clock,p3t0)*xx(thpart(clock,p3t0),0), \
+      rpart(clock,p3t0)*yy(thpart(clock,p3t0),0), \
+      rpart(clock,p3t0)*zz(thpart(clock,p3t0),0) w p pt 7 ps 1 lt 3

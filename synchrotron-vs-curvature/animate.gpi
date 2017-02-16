@@ -1,0 +1,28 @@
+nframes = arg1
+frame = arg2
+
+clock = frame/(1.0*nframes)
+
+unset colorbox
+unset key
+unset border
+unset tics
+
+set lt 1 lc rgb "white"
+set lt 2 lc rgb "magenta"
+set lt 3 pt 7 ps 1 lc rgb "yellow"
+
+set bmargin at screen 0.0
+set tmargin at screen 1.0
+
+set multiplot
+    set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+    set lmargin at screen 0.0
+    set rmargin at screen 0.5
+    load "synchrotron.gpi"
+    unset object 1
+
+    set lmargin at screen 0.5
+    set rmargin at screen 1.0
+    load "curvature.gpi"
+unset multiplot

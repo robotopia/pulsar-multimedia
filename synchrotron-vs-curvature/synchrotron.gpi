@@ -1,0 +1,129 @@
+# Toy model of synchrotron emission in pulsar setting
+# Assumes "clock" has been defined
+
+# Pulsar radius
+rp = 0.6
+
+# Max distance from origin for dipole field lines
+R  = 5.0
+
+# Gyration frequency
+gyrfreq = 26.0 # per clock
+
+# Gyration radius
+gyrrad = 0.09
+
+# Speed along field line
+speed = 1.0 # half-circuits per clock
+
+# Start times of (three) particles
+p1t0 = -0.5 # (So it's already along its trajectory at the start of the animation)
+p2t0 = 0
+p3t0 = 0.5
+
+# Formulae for field lines
+r(th) = R * sin(th)**2       # (th = colat )
+th(r) = asin(sqrt(r/R))      # (r  = radius)
+
+# Formulas for position as a function of time (motion of particles)
+rpart(clock, starttime) = (clock - starttime >= 0 && \
+                           clock - starttime <= 1) ? \
+                          R*speed*(clock - starttime) : \
+                          1/0
+thpart(clock, starttime) = th(rpart(clock, starttime))
+
+# Formula for approximating the pitch angle of the normal plane to the particles' motion
+normth(th) = pi/2.0 - 2*th
+
+# Formula for gyration angle as a function of time
+gyrangle(clock) = 2*pi*gyrfreq*clock
+
+# Formula for x, y, and z pertubations due to gyration
+gyrx(clock,starttime) = -gyrrad*sin(gyrangle(clock))*sin(normth(thpart(clock,starttime)))
+gyry(clock,starttime) =  gyrrad*cos(gyrangle(clock))
+gyrz(clock,starttime) =  gyrrad*sin(gyrangle(clock))*cos(normth(thpart(clock,starttime)))
+
+# Colat/Long coords --> Cartesian
+xx(u, v) = sin(u) * cos(v)
+yy(u, v) = sin(u) * sin(v)
+zz(u, v) = cos(u)
+
+# Formulas for final particle position
+posx(clock,starttime) = rpart(clock,starttime)*xx(thpart(clock,starttime),0) + gyrx(clock,starttime)
+posy(clock,starttime) = rpart(clock,starttime)*yy(thpart(clock,starttime),0) + gyry(clock,starttime)
+posz(clock,starttime) = rpart(clock,starttime)*zz(thpart(clock,starttime),0) + gyrz(clock,starttime)
+
+# Formula for doing (normalised) cross products in 3D
+len(x,y,z) = sqrt(x**2 + y**2 + z**2)
+ncrossx(x1,y1,z1,x2,y2,z2) = (y1*z2-y2*z1) / (len(x1,y1,z1)*len(x2,y2,z2))
+ncrossy(x1,y1,z1,x2,y2,z2) = (z1*x2-z2*x1) / (len(x1,y1,z1)*len(x2,y2,z2))
+ncrossz(x1,y1,z1,x2,y2,z2) = (x1*y2-x2*y1) / (len(x1,y1,z1)*len(x2,y2,z2))
+
+# Formula for arrow dimensions
+arrowx(clock,starttime) = (clock - starttime >=0 && clock - starttime <= 1) ? \
+                          arrowsize*ncrossx(xx(2*thpart(clock,starttime),0), \
+                                            yy(2*thpart(clock,starttime),0), \
+                                            zz(2*thpart(clock,starttime),0), \
+                                            gyrx(clock,starttime), \
+                                            gyry(clock,starttime), \
+                                            gyrz(clock,starttime)) : 0
+arrowy(clock,starttime) = (clock - starttime >=0 && clock - starttime <= 1) ? \
+                          arrowsize*ncrossy(xx(2*thpart(clock,starttime),0), \
+                                            yy(2*thpart(clock,starttime),0), \
+                                            zz(2*thpart(clock,starttime),0), \
+                                            gyrx(clock,starttime), \
+                                            gyry(clock,starttime), \
+                                            gyrz(clock,starttime)) : 0
+arrowz(clock,starttime) = (clock - starttime >=0 && clock - starttime <= 1) ? \
+                          arrowsize*ncrossz(xx(2*thpart(clock,starttime),0), \
+                                            yy(2*thpart(clock,starttime),0), \
+                                            zz(2*thpart(clock,starttime),0), \
+                                            gyrx(clock,starttime), \
+                                            gyry(clock,starttime), \
+                                            gyrz(clock,starttime)) : 0
+
+# Plot arrows showing direction of emission
+arrowsize = 0.3
+startarrow = 0.12
+endarrow   = 0.85
+if (clock - p1t0 >= startarrow && clock - p1t0 <= endarrow) {
+    set arrow 1 from   posx(clock,p1t0),   posy(clock,p1t0),   posz(clock,p1t0) \
+                rto  arrowx(clock,p1t0), arrowy(clock,p1t0), arrowz(clock,p1t0) \
+                front lt 1
+}
+if (clock - p2t0 >= startarrow && clock - p2t0 <= endarrow) {
+    set arrow 2 from   posx(clock,p2t0),   posy(clock,p2t0),   posz(clock,p2t0) \
+                rto  arrowx(clock,p2t0), arrowy(clock,p2t0), arrowz(clock,p2t0) \
+                front lt 1
+}
+if (clock - p3t0 >= startarrow && clock - p3t0 <= endarrow) {
+    set arrow 3 from   posx(clock,p3t0),   posy(clock,p3t0),   posz(clock,p3t0) \
+                rto  arrowx(clock,p3t0), arrowy(clock,p3t0), arrowz(clock,p3t0) \
+                front lt 1
+}
+ 
+
+set parametric
+set isosamples 45
+
+set view equal xyz
+set view 65,52,2,1
+set hidden3d front
+set xyplane 0
+
+set urange [0:pi]
+set vrange [0:2*pi]
+
+set xrange [-0.7:4.0]
+set yrange [-1.7:2.2]
+set zrange [-0.6:2.1]
+
+splot rp*xx(u,v),   rp*yy(u,v),   rp*zz(u,v) lt 1, \
+      r(u)*xx(u,0), r(u)*yy(u,0), r(u)*zz(u,0) lt 2, \
+      posx(clock,p1t0), posy(clock,p1t0), posz(clock,p1t0) w p lt 3, \
+      posx(clock,p2t0), posy(clock,p2t0), posz(clock,p2t0) w p lt 3, \
+      posx(clock,p3t0), posy(clock,p3t0), posz(clock,p3t0) w p lt 3
+
+unset arrow 1
+unset arrow 2
+unset arrow 3
