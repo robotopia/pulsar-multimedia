@@ -17,12 +17,16 @@ set tmargin at screen 1.0
 
 set multiplot
     set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+    set label 1 "Synchrotron radiation" at screen 0.25,0.1 center font ",20" tc rgb "white"
     set lmargin at screen 0.0
     set rmargin at screen 0.5
     load "synchrotron.gpi"
     unset object 1
+    unset label 1
 
+    set label 2 "Curvature radiation" at screen 0.75,0.1 center font ",20" tc rgb "white"
     set lmargin at screen 0.5
     set rmargin at screen 1.0
     load "curvature.gpi"
+    unset label 2
 unset multiplot

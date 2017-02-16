@@ -60,6 +60,7 @@ ncrossy(x1,y1,z1,x2,y2,z2) = (z1*x2-z2*x1) / (len(x1,y1,z1)*len(x2,y2,z2))
 ncrossz(x1,y1,z1,x2,y2,z2) = (x1*y2-x2*y1) / (len(x1,y1,z1)*len(x2,y2,z2))
 
 # Formula for arrow dimensions
+arrowsize = 0.3
 arrowx(clock,starttime) = (clock - starttime >=0 && clock - starttime <= 1) ? \
                           arrowsize*ncrossx(xx(2*thpart(clock,starttime),0), \
                                             yy(2*thpart(clock,starttime),0), \
@@ -83,7 +84,6 @@ arrowz(clock,starttime) = (clock - starttime >=0 && clock - starttime <= 1) ? \
                                             gyrz(clock,starttime)) : 0
 
 # Plot arrows showing direction of emission
-arrowsize = 0.3
 startarrow = 0.12
 endarrow   = 0.85
 if (clock - p1t0 >= startarrow && clock - p1t0 <= endarrow) {

@@ -31,11 +31,49 @@ xx(u, v) = sin(u) * cos(v)
 yy(u, v) = sin(u) * sin(v)
 zz(u, v) = cos(u)
 
+# Gradient of dipole line (in xz-plane) as a function of colatitude
+dzdx(th) = 3*sin(th)*cos(th) / (2*cos(th)**2 - sin(th)**2)
+
+# Same again, but as a function of time
+dzdxt(clock, starttime) = dzdx(thpart(clock, starttime))
+
+# Formulas for final particle position
+posx(clock,starttime) = rpart(clock,starttime)*xx(thpart(clock,starttime),0)
+posy(clock,starttime) = rpart(clock,starttime)*yy(thpart(clock,starttime),0)
+posz(clock,starttime) = rpart(clock,starttime)*zz(thpart(clock,starttime),0)
+
+# Formula for arrow dimensions
+arrowsize = 1.0
+triangleside(b_over_a, c) = c / sqrt(1+b_over_a**2)
+arrowx(clock, starttime) = triangleside(1.0/dzdxt(clock, starttime), arrowsize)
+arrowy(clock, starttime) = 0.0
+arrowz(clock, starttime) = sgn(dzdxt(clock, starttime))*triangleside(dzdxt(clock, starttime), arrowsize)
+
+# Plot arrows showing direction of emission
+startarrow = 0.12
+endarrow   = 0.85
+if (clock - p1t0 >= startarrow && clock - p1t0 <= endarrow) {
+    set arrow 1 from   posx(clock,p1t0),   posy(clock,p1t0),   posz(clock,p1t0) \
+                rto  arrowx(clock,p1t0), arrowy(clock,p1t0), arrowz(clock,p1t0) \
+                front lt 1
+}
+if (clock - p2t0 >= startarrow && clock - p2t0 <= endarrow) {
+    set arrow 2 from   posx(clock,p2t0),   posy(clock,p2t0),   posz(clock,p2t0) \
+                rto  arrowx(clock,p2t0), arrowy(clock,p2t0), arrowz(clock,p2t0) \
+                front lt 1
+}
+if (clock - p3t0 >= startarrow && clock - p3t0 <= endarrow) {
+    set arrow 3 from   posx(clock,p3t0),   posy(clock,p3t0),   posz(clock,p3t0) \
+                rto  arrowx(clock,p3t0), arrowy(clock,p3t0), arrowz(clock,p3t0) \
+                front lt 1
+}
+
+
 set parametric
 set isosamples 45
 
 set view equal xyz
-set view 65,52,2,1
+#set view 65,52,2,1
 set hidden3d front
 set xyplane 0
 
@@ -48,12 +86,10 @@ set zrange [-0.6:2.1]
 
 splot rp*xx(u,v),   rp*yy(u,v),   rp*zz(u,v) lt 1, \
       r(u)*xx(u,0), r(u)*yy(u,0), r(u)*zz(u,0) lt 2, \
-      rpart(clock,p1t0)*xx(thpart(clock,p1t0),0), \
-      rpart(clock,p1t0)*yy(thpart(clock,p1t0),0), \
-      rpart(clock,p1t0)*zz(thpart(clock,p1t0),0) w p pt 7 ps 1 lt 3, \
-      rpart(clock,p2t0)*xx(thpart(clock,p2t0),0), \
-      rpart(clock,p2t0)*yy(thpart(clock,p2t0),0), \
-      rpart(clock,p2t0)*zz(thpart(clock,p2t0),0) w p pt 7 ps 1 lt 3, \
-      rpart(clock,p3t0)*xx(thpart(clock,p3t0),0), \
-      rpart(clock,p3t0)*yy(thpart(clock,p3t0),0), \
-      rpart(clock,p3t0)*zz(thpart(clock,p3t0),0) w p pt 7 ps 1 lt 3
+      posx(clock,p1t0), posy(clock,p1t0), posz(clock,p1t0) w p lt 3, \
+      posx(clock,p2t0), posy(clock,p2t0), posz(clock,p2t0) w p lt 3, \
+      posx(clock,p3t0), posy(clock,p3t0), posz(clock,p3t0) w p lt 3
+
+unset arrow 1
+unset arrow 2
+unset arrow 3
