@@ -9,6 +9,9 @@ spheremap.png: spheremap.gpi
 spheremap-with-stokes.png: spheremap-with-stokes.gpi
 	$(GNUPLOT) -e "arg1 = \"$@\";" $<
 
+pols2stokes.png: pols2stokes.gpi
+	mygnuplot -o png -s 800,800 $< > $@
+
 %.gif: %.png
 	convert -loop 0 -delay 3 $(basename $<)???$(suffix $<) $@
 	@$(MAKE) --no-print-directory clean-still
