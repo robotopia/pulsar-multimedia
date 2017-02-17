@@ -10,7 +10,7 @@ set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
 set border lc rgb "white" lw 2
 unset key
 
-set title "Simulated J0034-0721 \"polarisation stack\"" tc rgb "white" font ",20"
+set title "Simulated \"polarisation stack\"" tc rgb "white" font ",20"
 
 set xtics 20 tc rgb "white" font ",20"
 set ytics 10 tc rgb "white" font ",20"

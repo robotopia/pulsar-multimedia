@@ -1,6 +1,10 @@
-J0034.png: polstack.gpi J0034.dat
+.SECONDARY:
+
+all: J0034.png B0809.png
+
+%.png: polstack.gpi %.dat
 	mygnuplot -o png -s 1000,1000 $^ > $@
 
-J0034.dat: J0034.m
+%.dat: %.m
 	octave $< > $@
 
