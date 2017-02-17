@@ -1,0 +1,41 @@
+nframes  = arg1
+frame    = arg2
+
+clock = frame / (nframes*1.0); # Expecting frames to start from 0
+set angle radians
+
+unset colorbox
+unset key
+unset border
+unset tics
+
+# Set global background
+set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black" behind
+set lt 1 lc rgb "white"
+set lt 2 lc rgb "magenta"
+set lt 3 pt 7 ps 1 lc rgb "yellow"
+
+set bmargin at screen 0
+set tmargin at screen 1
+
+set view 45,52,2,1
+
+set multiplot
+
+    set lmargin at screen 0.0
+    set rmargin at screen 0.5
+
+    set label 1 "Rotational frame" at screen 0.25,0.03 center front font ",20" tc rgb "white"
+
+    load 'rotframe.gpi'
+
+    unset object 1
+
+    set lmargin at screen 0.5
+    set rmargin at screen 1.0
+
+    set label 1 "Inertial frame" at screen 0.75,0.03 center front font ",20" tc rgb "white"
+
+    load 'inertframe.gpi'
+
+unset multiplot

@@ -1,0 +1,119 @@
+# Toy model of curvature emission in pulsar setting
+# Assumes "clock" has been defined
+
+# Pulsar radius
+rp = 0.6
+
+# Max distance from origin for dipole field lines
+R  = 5.0
+
+# Speed along field line
+speed = 1.0 # half-circuits per clock
+
+# Start times of (three) particles
+p1t0 = -0.5 # (So it's already along its trajectory at the start of the animation)
+p2t0 = 0
+p3t0 = 0.5
+
+# Formulae for field lines
+r(th) = R * sin(th)**2       # (th = colat )
+th(r) = asin(sqrt(r/R))      # (r  = radius)
+
+# Formulas for position as a function of time (motion of particles)
+rpart(clock, starttime) = (clock - starttime >= 0 && \
+                           clock - starttime <= 1) ? \
+                          R*speed*(clock - starttime) : \
+                          1/0
+thpart(clock, starttime) = th(rpart(clock, starttime))
+
+# Colat/Long coords --> Cartesian
+xx(u, v) = sin(u) * cos(v)
+yy(u, v) = sin(u) * sin(v)
+zz(u, v) = cos(u)
+
+# Gradient of dipole line (in xz-plane) as a function of colatitude
+dzdx(th) = 3*sin(th)*cos(th) / (2*cos(th)**2 - sin(th)**2)
+
+# Same again, but as a function of time
+dzdxt(clock, starttime) = dzdx(thpart(clock, starttime))
+
+# Formulas for final particle position
+posx(clock,starttime) = rpart(clock,starttime)*xx(thpart(clock,starttime),0)
+posy(clock,starttime) = rpart(clock,starttime)*yy(thpart(clock,starttime),0)
+posz(clock,starttime) = rpart(clock,starttime)*zz(thpart(clock,starttime),0)
+
+# Calculate the extra angle that the arrows have to be rotated by because of aberration
+abangle(r) = atan(4*pi*r / (3.0*R))
+abanglet(clock,starttime) = abangle(rpart(clock, starttime))
+
+# Formula for arrow dimensions
+arrowsize = 1.0
+triangleside(b_over_a, c) = c / sqrt(1+b_over_a**2)
+arrowx(clock, starttime) = triangleside(1.0/dzdxt(clock, starttime), arrowsize)
+arrowy(clock, starttime) = 0.0
+arrowz(clock, starttime) = sgn(dzdxt(clock, starttime))*triangleside(dzdxt(clock, starttime), arrowsize)
+
+arrowabx(clock, starttime) = cos(abanglet(clock,starttime))*arrowx(clock, starttime) - \
+                             sin(abanglet(clock,starttime))*arrowy(clock, starttime)
+arrowaby(clock, starttime) = sin(abanglet(clock,starttime))*arrowx(clock, starttime) + \
+                             cos(abanglet(clock,starttime))*arrowy(clock, starttime)
+arrowabz(clock, starttime) = arrowz(clock, starttime)
+
+# Plot arrows showing direction of emission
+startarrow = 0.12
+endarrow   = 0.85
+if (clock - p1t0 >= startarrow && clock - p1t0 <= endarrow) {
+    set arrow 1 from   posx(clock,p1t0),   posy(clock,p1t0),   posz(clock,p1t0) \
+                rto  arrowx(clock,p1t0), arrowy(clock,p1t0), arrowz(clock,p1t0) \
+                front lt 1
+}
+if (clock - p2t0 >= startarrow && clock - p2t0 <= endarrow) {
+    set arrow 2 from   posx(clock,p2t0),   posy(clock,p2t0),   posz(clock,p2t0) \
+                rto  arrowx(clock,p2t0), arrowy(clock,p2t0), arrowz(clock,p2t0) \
+                front lt 1
+}
+if (clock - p3t0 >= startarrow && clock - p3t0 <= endarrow) {
+    set arrow 3 from   posx(clock,p3t0),   posy(clock,p3t0),   posz(clock,p3t0) \
+                rto  arrowx(clock,p3t0), arrowy(clock,p3t0), arrowz(clock,p3t0) \
+                front lt 1
+}
+if (clock - p1t0 >= startarrow && clock - p1t0 <= endarrow) {
+    set arrow 4 from     posx(clock,p1t0),     posy(clock,p1t0),     posz(clock,p1t0) \
+                rto  arrowabx(clock,p1t0), arrowaby(clock,p1t0), arrowabz(clock,p1t0) \
+                front lt 1 lc rgb "green"
+}
+if (clock - p2t0 >= startarrow && clock - p2t0 <= endarrow) {
+    set arrow 5 from     posx(clock,p2t0),     posy(clock,p2t0),     posz(clock,p2t0) \
+                rto  arrowabx(clock,p2t0), arrowaby(clock,p2t0), arrowabz(clock,p2t0) \
+                front lt 1 lc rgb "green"
+}
+if (clock - p3t0 >= startarrow && clock - p3t0 <= endarrow) {
+    set arrow 6 from     posx(clock,p3t0),     posy(clock,p3t0),     posz(clock,p3t0) \
+                rto  arrowabx(clock,p3t0), arrowaby(clock,p3t0), arrowabz(clock,p3t0) \
+                front lt 1 lc rgb "green"
+}
+
+set parametric
+set isosamples 45
+
+set view equal xyz
+#set view 65,52,2,1
+set hidden3d front
+set xyplane 0
+
+set urange [0:pi]
+set vrange [0:2*pi]
+
+set xrange [-0.7:4.0]
+set yrange [-1.7:2.2]
+set zrange [-0.6:2.1]
+
+splot rp*xx(u,v),   rp*yy(u,v),   rp*zz(u,v) lt 1, \
+      r(u/2.0)*xx(u/2.0,0), r(u/2.0)*yy(u/2.0,0), r(u/2.0)*zz(u/2.0,0) lt 2, \
+      posx(clock,p1t0), posy(clock,p1t0), posz(clock,p1t0) w p lt 3, \
+      posx(clock,p2t0), posy(clock,p2t0), posz(clock,p2t0) w p lt 3, \
+      posx(clock,p3t0), posy(clock,p3t0), posz(clock,p3t0) w p lt 3
+
+unset arrow 1
+unset arrow 2
+unset arrow 3
