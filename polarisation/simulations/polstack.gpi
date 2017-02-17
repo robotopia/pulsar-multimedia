@@ -1,0 +1,38 @@
+# Produces a pulse stack with color indicating polarisation angle
+
+poltimeseries = arg1
+nbins = 241
+
+set view map
+
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+
+set border lc rgb "white" lw 2
+unset key
+
+set title "Simulated J0034-0721 \"polarisation stack\"" tc rgb "white" font ",20"
+
+set xtics 20 tc rgb "white" font ",20"
+set ytics 10 tc rgb "white" font ",20"
+
+set yrange [*:*] noextend
+set xrange [-80:80] noextend
+
+set palette model HSV defined ( 0 0 1 1, 1 1 1 1 )
+Hue(PA) = PA/180.0+0.5
+set cbrange [Hue(-90):Hue(90)]
+set cbtics ("-90°" Hue(-90), "0°" Hue(0), "90°" Hue(90)) tc rgb "white" font ",20"
+set cblabel "Polarisation Angle" tc rgb "white" font ",20"
+set lmargin at screen 0.15
+set rmargin at screen 0.80
+
+set ylabel "Pulse number" tc rgb "white" font ",20" offset -3
+set xlabel "Rotation phase (°)" tc rgb "white" font ",20"
+
+centrebin = 120
+bin2deg(bin) = (bin - centrebin*1.0)/nbins*360
+
+prepped_data = "< sed '0~".sprintf("%d", nbins)." G;' < ".poltimeseries
+splot prepped_data \
+        using (bin2deg($3)):1:(hsv2rgb(Hue($8),1,$4)) \
+        with pm3d lc rgb variable
