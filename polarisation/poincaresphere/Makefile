@@ -1,7 +1,12 @@
 NFRAMES = $(shell cat nframes)
 GNUPLOT = gnuplot
 
-all: rotate.gif swap.gif spheremap.png spheremap-with-stokes.png all.gif
+all: rotate.gif \
+	 swap.gif \
+	 spheremap.png \
+	 spheremap-with-stokes.png \
+	 all.gif \
+	 pols2stokes.png
 
 spheremap.png: spheremap.gpi
 	$(GNUPLOT) -e "arg1 = \"$@\";" $<
