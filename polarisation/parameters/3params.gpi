@@ -1,0 +1,37 @@
+# A 3-tiered slide showing animations of changing ellise SIZE, ANGLE, and ECCENTRICITY
+# Assumes "clock" is defined
+
+Px(phi,chi,phase) = cos(phi)*cos(phase) - tan(chi)*sin(phi)*sin(phase)
+Py(phi,chi,phase) = sin(phi)*cos(phase) + tan(chi)*cos(phi)*sin(phase)
+
+set parametric
+
+phi_lo = 0
+phi_hi = pi
+
+chi_lo = -pi/2
+chi_hi =  pi/2
+
+set urange [phi_lo:phi_hi]
+set vrange [chi_lo:chi_hi]
+
+set samples 361
+
+set xrange [-1:1]
+set yrange [-1:1]
+set size ratio -1
+
+chi_clock = sin(clock*pi)**2
+phi_clock = clock
+
+phi = phi_clock*(phi_hi-phi_lo) + phi_lo
+chi = chi_clock*(chi_hi-chi_lo) + chi_lo
+
+set multiplot
+
+    set bmargin at screen 2.0/3.0
+    set tmargin at screen 3.0/3.0
+    set lmargin at screen 2.0/3.0
+    set rmargin at screen 3.0/3.0
+
+unset multiplot
