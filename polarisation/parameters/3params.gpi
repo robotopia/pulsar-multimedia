@@ -9,11 +9,13 @@ set parametric
 phi_lo = 0
 phi_hi = pi
 
-chi_lo = -pi/2
-chi_hi =  pi/2
+chi_lo = -pi/4
+chi_hi =  pi/4
 
-set urange [phi_lo:phi_hi]
-set vrange [chi_lo:chi_hi]
+siz_lo = 0.5
+siz_hi = 1.0
+
+set trange [0:2*pi]
 
 set samples 361
 
@@ -23,15 +25,37 @@ set size ratio -1
 
 chi_clock = sin(clock*pi)**2
 phi_clock = clock
+siz_clock  = sin(clock*pi)**2
 
 phi = phi_clock*(phi_hi-phi_lo) + phi_lo
 chi = chi_clock*(chi_hi-chi_lo) + chi_lo
+siz = siz_clock*(siz_hi-siz_lo) + siz_lo
+
+# Fixed parameters
+PHI = 0
+CHI = pi/8
+SIZ = 1
 
 set multiplot
 
+    # Top right = oscillating size
     set bmargin at screen 2.0/3.0
     set tmargin at screen 3.0/3.0
     set lmargin at screen 2.0/3.0
     set rmargin at screen 3.0/3.0
+
+    plot siz*Px(PHI, CHI, t), siz*Py(PHI, CHI, t) lw 2
+
+    # Mid right = rotation
+    set bmargin at screen 1.0/3.0
+    set tmargin at screen 2.0/3.0
+
+    plot SIZ*Px(phi, CHI, t), SIZ*Py(phi, CHI, t) lw 2
+
+    # Bot right = eccentricity
+    set bmargin at screen 0.0/3.0
+    set tmargin at screen 1.0/3.0
+
+    plot SIZ*Px(PHI, chi, t), SIZ*Py(PHI, chi, t) lw 2
 
 unset multiplot
