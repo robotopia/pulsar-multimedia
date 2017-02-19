@@ -1,6 +1,17 @@
 # A 3-tiered slide showing animations of changing ellise SIZE, ANGLE, and ECCENTRICITY
 # Assumes "clock" is defined
 
+# Look and feel of plot
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+set lt 1 lw 2   lc rgb "yellow"
+set lt 2 lw 1   lc rgb "white"
+set lt 3 ps 2.5 lc rgb "cyan"
+
+unset border
+unset tics
+unset key
+
+# Functions for plotting ellipses
 Px(phi,chi,phase) = cos(phi)*cos(phase) - tan(chi)*sin(phi)*sin(phase)
 Py(phi,chi,phase) = sin(phi)*cos(phase) + tan(chi)*cos(phi)*sin(phase)
 
@@ -31,31 +42,146 @@ phi = phi_clock*(phi_hi-phi_lo) + phi_lo
 chi = chi_clock*(chi_hi-chi_lo) + chi_lo
 siz = siz_clock*(siz_hi-siz_lo) + siz_lo
 
+# Function versions of the above (assumes 0<t<1)
+phif(t) = t*(phi_hi-phi_lo) + phi_lo
+chif(t) = t*(chi_hi-chi_lo) + chi_lo
+sizf(t) = t*(siz_hi-siz_lo) + siz_lo
+
 # Fixed parameters
 PHI = 0
 CHI = pi/8
 SIZ = 1
 
+# Buffer margin
+mgn = 0.03
+
+# Scale tic marks (parametric, assumes 0<t<2*pi
+mytic(t) = (t/(2*pi))*0.2 - 0.1
+
 set multiplot
 
     # Top right = oscillating size
-    set bmargin at screen 2.0/3.0
-    set tmargin at screen 3.0/3.0
-    set lmargin at screen 2.0/3.0
-    set rmargin at screen 3.0/3.0
+    set bmargin at screen 2.0/3.0 + mgn
+    set tmargin at screen 3.0/3.0 - mgn
+    set lmargin at screen 2.0/3.0 + mgn
+    set rmargin at screen 3.0/3.0 - mgn
 
-    plot siz*Px(PHI, CHI, t), siz*Py(PHI, CHI, t) lw 2
+    set arrow 1 from 0,0 to -siz,0 heads lt 2
+    set label 1 "m" at -siz/2.0,0.2 center tc rgb "white" font ",12"
+
+    plot siz*Px(PHI, CHI, t), siz*Py(PHI, CHI, t) lt 1
+
+    unset arrow 1
+    unset label 1
+    unset object 1
 
     # Mid right = rotation
-    set bmargin at screen 1.0/3.0
-    set tmargin at screen 2.0/3.0
+    set bmargin at screen 1.0/3.0 + mgn
+    set tmargin at screen 2.0/3.0 - mgn
 
-    plot SIZ*Px(phi, CHI, t), SIZ*Py(phi, CHI, t) lw 2
+    set arrow 1 from 0,0 to cos(phi),sin(phi) nohead lt 2
+    set arrow 2 from 0,0 to 1,0 nohead lt 2
+
+    set label 1 "ψ" at 0.3*cos(phi/2.0),0.3*sin(phi/2.0) center tc rgb "white" font ",12"
+
+    plot SIZ*Px(phi, CHI, t), SIZ*Py(phi, CHI, t) lt 1, \
+         0.1*cos(t*phi/(2*pi)),0.1*sin(t*phi/(2*pi)) lt 2
+
+    unset arrow 1
+    unset arrow 2
+    unset label 1
 
     # Bot right = eccentricity
-    set bmargin at screen 0.0/3.0
-    set tmargin at screen 1.0/3.0
+    set bmargin at screen 0.0/3.0 + mgn
+    set tmargin at screen 1.0/3.0 - mgn
 
-    plot SIZ*Px(PHI, chi, t), SIZ*Py(PHI, chi, t) lw 2
+    set arrow 1 from  0,0 to -1,0        nohead lt 2
+    set arrow 2 from  0,0 to  0,tan(chi) nohead lt 2
+    set arrow 3 from -1,0 to  0,tan(chi) nohead lt 2
+
+    set label 1 "χ" at 0.3*cos(chi/2.0)-1,0.3*sin(chi/2.0) center tc rgb "white" font ",12"
+    set label 2 (chi>0 ? "R.H." : "L.H.") at 0,0.5 center tc rgb "white" font ",12"
+
+    plot SIZ*Px(PHI, chi, t), SIZ*Py(PHI, chi, t) lt 1, \
+         0.15*cos(t*chi/(2*pi))-1,0.15*sin(t*chi/(2*pi)) lt 2
+
+    unset arrow 1
+    unset arrow 2
+    unset arrow 3
+    unset label 1
+    unset label 2
+
+    # Top mid = scale for size
+    set size noratio
+
+    set bmargin at screen 2.0/3.0 + mgn
+    set tmargin at screen 3.0/3.0 - mgn
+    set lmargin at screen 1.0/3.0 + mgn
+    set rmargin at screen 2.0/3.0 - mgn
+
+    mgnx = mgn / (1.0/3.0) * (siz_hi-siz_lo)
+    set xrange [siz_lo-mgnx:siz_hi+mgnx]
+    set label 1 sprintf("%.1f", siz_lo) at siz_lo,-0.3 center tc rgb "white" font ",16"
+    set label 2 sprintf("%.1f", siz_hi) at siz_hi,-0.3 center tc rgb "white" font ",16"
+    set label 3 sprintf("%.1f", siz   ) at siz,    0.6 center tc rgb "white" font ",16"
+
+    set label 4 "Magnitude, m"           at screen 1.0/6.0, 5.0/6.0 center tc rgb "white" font ",18"
+    set label 5 "Polarisation\nangle, ψ" at screen 1.0/6.0, 3.2/6.0 center tc rgb "white" font ",18"
+    set label 6 "\"Eccentricity\", χ"     at screen 1.0/6.0, 1.0/6.0 center tc rgb "white" font ",18"
+
+    plot sizf(t/(2*pi)),0 lt 2, \
+         siz_lo, mytic(t) lt 2, \
+         siz_hi, mytic(t) lt 2, \
+         siz, 0.3 with points lt 3 pt 11
+
+    unset label 1
+    unset label 2
+    unset label 3
+
+    unset label 4
+    unset label 5
+    unset label 6
+
+    # Mid mid = scale for rotation angle
+    set bmargin at screen 1.0/3.0 + mgn
+    set tmargin at screen 2.0/3.0 - mgn
+    set lmargin at screen 1.0/3.0 + mgn
+    set rmargin at screen 2.0/3.0 - mgn
+
+    mgnx = mgn / (1.0/3.0) * (phi_hi-phi_lo)
+    set xrange [phi_lo-mgnx:phi_hi+mgnx]
+    set label 1 sprintf("%d°", phi_lo*180.0/pi) at phi_lo,-0.3 center tc rgb "white" font ",16"
+    set label 2 sprintf("%d°", phi_hi*180.0/pi) at phi_hi,-0.3 center tc rgb "white" font ",16"
+    set label 3 sprintf("%d°", phi   *180.0/pi) at phi,    0.6 center tc rgb "white" font ",16"
+
+    plot phif(t/(2*pi)),0 lt 2, \
+         phi_lo, mytic(t) lt 2, \
+         phi_hi, mytic(t) lt 2, \
+         phi, 0.3 with points lt 3 pt 11
+
+    unset label 1
+    unset label 2
+    unset label 3
+
+    # Bot mid = scale for eccentricity
+    set bmargin at screen 0.0/3.0 + mgn
+    set tmargin at screen 1.0/3.0 - mgn
+    set lmargin at screen 1.0/3.0 + mgn
+    set rmargin at screen 2.0/3.0 - mgn
+
+    mgnx = mgn / (1.0/3.0) * (chi_hi-chi_lo)
+    set xrange [chi_lo-mgnx:chi_hi+mgnx]
+    set label 1 sprintf("%d°", chi_lo*180.0/pi) at chi_lo,-0.3 center tc rgb "white" font ",16"
+    set label 2 sprintf("%d°", chi_hi*180.0/pi) at chi_hi,-0.3 center tc rgb "white" font ",16"
+    set label 3 sprintf("%d°", chi   *180.0/pi) at chi,    0.6 center tc rgb "white" font ",16"
+
+    plot chif(t/(2*pi)),0 lt 2, \
+         chi_lo, mytic(t) lt 2, \
+         chi_hi, mytic(t) lt 2, \
+         chi, 0.3 with points lt 3 pt 11
+
+    unset label 1
+    unset label 2
+    unset label 3
 
 unset multiplot
