@@ -1,0 +1,7 @@
+framefile = arg1
+nframes   = arg2
+frame     = arg3
+
+clock = frame / (nframes*1.0)
+
+load framefile

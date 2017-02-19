@@ -1,0 +1,56 @@
+# Morphing a 2d grid into a 3d sphere
+# Assumes "clock" has been defined
+
+# The usual "smooth clock" function
+smth_clock(t) = 3*t**2 - 2*t**3
+smth_interp(val1, val2, t) = (1-smth_clock(t))*val1 + smth_clock(t)*val2
+
+# Look and feel
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+unset border
+unset tics
+unset key
+set view equal xyz
+set xyplane 0
+set hidden3d front
+#set view 90,0,1.5,1
+#set view 60,110,1.5,1
+set view smth_interp(90,60,clock),smth_interp(0,110,clock),smth_interp(1.5,1,clock),1
+
+set lt 1 lw 1 lc rgb "white"
+set lt 2 lw 2 lc rgb "orange"
+set lt 3 lw 2 lc rgb "red"
+
+# u == phi; v == chi
+set urange [-pi/2:pi/2]
+set vrange [-pi/4:pi/4]
+
+set xrange [-1:1]
+set yrange [-1:1]
+set zrange [-1:1]
+
+# Parametric formulas
+# ... for the initial grid
+Gx(phi,chi) = 2.0 * phi / pi
+Gy(phi,chi) = -1
+Gz(phi,chi) = 4.0 * chi / pi
+
+# ... for the final sphere
+Sx(phi,chi) = cos(2*chi)*sin(2*phi)
+Sy(phi,chi) = -cos(2*chi)*cos(2*phi)
+Sz(phi,chi) = sin(2*chi)
+
+# ... and for the interpolation between the two (0 < t < 1)
+Ix(phi,chi,t) = (1-t)*Gx(phi,chi) + t*Sx(phi,chi)
+Iy(phi,chi,t) = (1-t)*Gy(phi,chi) + t*Sy(phi,chi)
+Iz(phi,chi,t) = (1-t)*Gz(phi,chi) + t*Sz(phi,chi)
+
+# Make the plot!
+set isosamples 33
+set parametric
+splot Ix(u,v,clock), Iy(u,v,clock), Iz(u,v,clock) lt 1, \
+      Ix(u,0,clock), Iy(u,0,clock), Iz(u,0,clock) lt 2, \
+      Ix(u, pi/4,clock), Iy(u, pi/4,clock), Iz(u, pi/4,clock) lt 3, \
+      Ix(u,-pi/4,clock), Iy(u,-pi/4,clock), Iz(u,-pi/4,clock) lt 3
+
+unset object 1
