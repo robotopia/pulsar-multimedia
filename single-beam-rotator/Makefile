@@ -6,3 +6,9 @@ all: pulsar_onebeam.gif
 
 %.gif: %.mpg %_palette.png
 	ffmpeg -y -i $< -i $(word 2,$^) -filter_complex "fps=24,scale=240:-1:flags=lanczos[x];[x][1:v]paletteuse" $@
+
+pulsestack.dat:
+	carousim timeseries -a 4.5 -z 9.3 -c 3.2 -n 2 -N 0.01 -p 75 -w 0.2 -C 100000 > $@
+
+pulsestack.bin: pulsestack.dat
+	cat $< | tr '\n' ' ' | splat binarize - > $@
