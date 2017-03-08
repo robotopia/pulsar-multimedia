@@ -1,3 +1,6 @@
+NFRAMES = 960
+FRAMES = $(shell seq -w 0 $$(($(NFRAMES)-1)))
+FRAMEFILES = $(patsubst %,frames/frame_%.png,$(FRAMES))
 
 all: pulsar_onebeam.gif
 
@@ -12,3 +15,9 @@ pulsestack.dat:
 
 pulsestack.bin: pulsestack.dat
 	cat $< | tr '\n' ' ' | splat binarize - > $@
+
+frames/anim.mpg: $(FRAMEFILES)
+	$(MAKE) -C $(@D) $(@F)
+
+frames/frame_%.png: anim.gpi frames.gpi
+	mygnuplot -o png -s 1000,600 $< $(NFRAMES) $* > $@
