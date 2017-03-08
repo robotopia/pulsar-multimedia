@@ -1,0 +1,92 @@
+# Assumes "clock" is defined (0 <= clock < 1)
+
+mod(x,m) = x - floor(x/m)*m
+
+nrows = 20.0
+ncols = 48.0
+samp = clock * (nrows*ncols)
+thisy = floor(samp/ncols) + 30
+thisx = floor(1024.0/ncols * mod(samp,ncols))
+rotateframe = mod(samp+34.001, 48)+1
+rotateimage = sprintf("frames/%04d.png", rotateframe)
+
+# Global properties
+unset tics
+unset border
+unset key
+set object 1 rectangle from screen 0,0 to screen 1,1 behind fc rgb "black"
+unset arrow 1
+unset arrow 2
+
+# Color functions
+unitrange(x) = x<0 ? 0 : (x>1 ? 1 : x)
+unit2color(x) = floor(unitrange(x)*255)
+myhot(x,a) = (unit2color(a)     << 24) + \
+             (unit2color(3*x)   << 16) + \
+             (unit2color(3*x-1) << 8 ) + \
+             (unit2color(3*x-2))
+
+set multiplot
+
+    # The rotating pulsar
+
+    set bmargin at screen 0.30
+    set lmargin at screen 0.01
+    set tmargin at screen 0.99
+    set rmargin at screen 0.80
+
+    unset xlabel
+    unset ylabel
+
+    set xrange [*:*] noextend
+    set yrange [*:*] noextend
+
+    plot rotateimage binary filetype=png with rgbimage
+
+    unset object 1
+
+    # The pulsestack
+    unset colorbox
+
+    set autoscale noextend
+
+    set bmargin at screen 0.07
+    set lmargin at screen 0.60
+    set tmargin at screen 0.70
+    set rmargin at screen 0.95
+
+    set arrow 1 from  250,-2.7 to     1,-2.7 lc rgb "white" lw 2
+    set arrow 2 from  775,-2.7 to  1024,-2.7 lc rgb "white" lw 2
+    set arrow 3 from  -50,  30 to   -50,  55 lc rgb "white" lw 2
+
+    set table "frames/pulsestack.dat"
+    plot 'pulsestack.bin' binary \
+                          array=(1024,75) \
+                          origin=(1,1) \
+                          dx=1 \
+                          dy=1 \
+                          format='%float64' \
+                          using 1 \
+                          with table
+
+    unset table
+
+    # Function to return bright color value only before clock value
+    offval = -2
+    val(x,y,v) = (y>thisy ? offval : \
+                  (y==thisy && x > thisx ? offval : v) \
+                 )
+
+    set xlabel "Pulse Rotation" font ",18" tc rgb "white" offset 0,2
+    set ylabel "Time" font ",18" tc rgb "white" offset 0,-4
+    set cbrange [-4:25]
+
+    set xrange [1:1024] noextend
+    set yrange [1:75] noextend
+
+    set pm3d map interpolate 0,0
+    set palette rgbformulae 21,22,23
+    pulsedata = "< sed '0~1024G;' < frames/pulsestack.dat"
+    splot pulsedata using 1:2:(val($1,$2,$3)) with pm3d
+
+unset multiplot

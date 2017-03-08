@@ -1,0 +1,6 @@
+nframes = arg1
+frame   = arg2
+
+clock = frame / (nframes*1.0)
+
+load 'frames.gpi'
