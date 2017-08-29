@@ -1,9 +1,3 @@
-basename = arg1
-nframes  = arg2
-frame    = arg3
-alpha    = arg4*pi/180 # deg -> rad
-zeta     = arg5*pi/180 # deg -> rad
-
 clock   = (frame+0.0) / nframes
 outfile = sprintf("%s%02d.png", basename, frame)
 set output outfile
