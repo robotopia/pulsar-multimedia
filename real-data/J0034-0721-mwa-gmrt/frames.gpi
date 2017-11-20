@@ -1,5 +1,5 @@
 # This script assumes a frame filename is given, e.g.
-frame = 'frame_0500.png'
+# frame = 'frame_0500.png'
 # Frame numbers are expected to range from 0000 to 0959 inclusive
 
 wth = 800
@@ -17,7 +17,7 @@ unset ylabel
 set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black" behind
 
 f = frame[7:10] + 0
-bf = (f+12) - floor((f+12)/48)*48 + 1
+bf = ((f+12) - floor((f+12)/24)*24)*2 + 1
 blender = sprintf("carousel/%04d.png", bf)
 bh = 540.0
 bw = 960.0
@@ -42,13 +42,14 @@ unset label
 unset arrow
 
 ####################################################
+# MWA
 
 set lmargin at screen 0.10
 set rmargin at screen 0.48
 set bmargin at screen 0.10
 set tmargin at screen 0.70
 
-cblo = -2
+cblo = -1
 cbhi = 10
 set cbrange [cblo:cbhi] noextend
 
@@ -59,21 +60,22 @@ unset colorbox
 set xtics 15 out nomirror tc rgb "white" format "%.0f°"
 set ytics 10 out nomirror tc rgb "white"
 set xlabel "Rotation phase" tc rgb "white" font ",20"
-set ylabel "Pulse number"   tc rgb "white" font ",20" offset 2
+set ylabel "Pulse number"   tc rgb "white" font ",20" offset 1.8
 
 set label 1 "MWA" at screen 0.29,0.75 center tc rgb "yellow" font ",30"
 
 psh = 100.0      # Number of pulses to display
 ps1 = 110.0      # First pulse to display
 xpix = 199.0     # The number of phase bins in the pulsestack (pixels per pulse)
-fps = 48         # frames per second
+fps = 24         # frames per second
 ppf = xpix/fps   # pixels per frame
 p1  = xpix*ps1    # starting pixel
 pixel = floor(f*ppf)+p1
+psw = 360.0*199.0/1024.0 # The pulse window width in degrees
 
 trail(val,p,len) = val + (cbhi-val)*(((pixel-(p) < len ? pixel-(p)-len : 0)/len)**2)
-p2x(p) = (p) - floor((p)/xpix)*xpix    # convert pixel to x value
-p2y(p) = floor((p)/xpix)               # convert pixel to y value
+p2x(p) = ((p) - floor((p)/xpix)*xpix)*psw/xpix -psw/2.0   # convert pixel to x value
+p2y(p) = ps1 + floor((p)/xpix)                       # convert pixel to y value
 
 ylo = ps1 + pixel/xpix - psh/2.0
 yhi = ps1 + pixel/xpix + psh/2.0
@@ -81,10 +83,54 @@ yhi = ps1 + pixel/xpix + psh/2.0
 set yrange [ylo:yhi] noextend
 
 plot 'pulsestacks/mwa_common.dat' \
-         binary  \
-         origin=(-2.988281e+01,0) \
-         dx=6.515625e-01 \
-         dy=1 \
+         binary record=(4780*199) \
+         format='%float64' \
+         u (p2x($0)):(p2y($0)):($0 < pixel ? trail($1,$0,150.0) : cblo) \
+         with image
+
+####################################################
+# GMRT
+
+set lmargin at screen 0.52
+set rmargin at screen 0.90
+set bmargin at screen 0.10
+set tmargin at screen 0.70
+
+cblo = -2
+cbhi = 30
+set cbrange [cblo:cbhi] noextend
+
+set border lw 2 lc rgb "white" front
+set xrange [*:*] noextend
+set palette rgbformulae 21,22,23
+unset colorbox
+set xtics 15 out nomirror tc rgb "white" format "%.0f°"
+set ytics 10 out nomirror format ""
+set xlabel "Rotation phase" tc rgb "white" font ",20"
+unset ylabel
+
+set label 1 "GMRT" at screen 0.71,0.75 center tc rgb "yellow" font ",30"
+
+psh = 100.0      # Number of pulses to display
+ps1 = 110.0      # First pulse to display
+xpix = 199.0     # The number of phase bins in the pulsestack (pixels per pulse)
+fps = 24         # frames per second
+ppf = xpix/fps   # pixels per frame
+p1  = xpix*ps1    # starting pixel
+pixel = floor(f*ppf)+p1
+psw = 360.0*199.0/1024.0 # The pulse window width in degrees
+
+trail(val,p,len) = val + (cbhi-val)*(((pixel-(p) < len ? pixel-(p)-len : 0)/len)**2)
+p2x(p) = ((p) - floor((p)/xpix)*xpix)*psw/xpix -psw/2.0   # convert pixel to x value
+p2y(p) = ps1 + floor((p)/xpix)                       # convert pixel to y value
+
+ylo = ps1 + pixel/xpix - psh/2.0
+yhi = ps1 + pixel/xpix + psh/2.0
+
+set yrange [ylo:yhi] noextend
+
+plot 'pulsestacks/gmrt_common.dat' \
+         binary record=(4780*199) \
          format='%float64' \
          u (p2x($0)):(p2y($0)):($0 < pixel ? trail($1,$0,150.0) : cblo) \
          with image
