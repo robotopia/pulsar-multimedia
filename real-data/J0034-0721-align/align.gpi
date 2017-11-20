@@ -1,0 +1,167 @@
+set terminal pngcairo enhanced size 900,1000 background rgb "black"
+set output 'foo.png'
+
+unset key
+unset colorbox
+
+set ytics 20 tc rgb "white"
+
+nbins = 199
+
+xorig = -35 # degrees
+xwidth = 70 # degrees
+xoffset = 0 # degrees
+
+xlo = xorig
+xhi = xorig + xwidth + xoffset
+
+set xrange [xlo:xhi] noextend
+
+A1 = 4700
+A2 = 4750
+
+B1 = 4625
+B2 = 4690
+
+C1 = 4500
+C2 = 4535
+
+Ab = 0.7
+At = 0.98
+
+Bb = 0.35
+Bt = 0.65
+
+Cb = 0.1
+Ct = 0.3
+
+cb2color(x,lo,hi) = 255.0*(x-lo)/(hi-lo)
+
+set lmargin at screen 0.1
+set rmargin at screen 0.8
+
+set multiplot
+
+####################################3
+# MWA
+
+set palette rgbformulae 0,3,0
+
+cblo = 0.0
+cbhi = 1.0
+set cbrange [cblo:cbhi]
+set border lw 2 lc rgb "white"
+
+# Mode A
+set bmargin at screen Ab
+set tmargin at screen At
+set yrange [A1:A2] noextend
+unset xlabel
+unset ylabel
+unset xtics
+set border 2+4+8 # left + top + right
+plot 'mwa_common.dat' \
+    binary array=(nbins,4780) \
+    origin=(xorig,0) \
+    dx=3.515625e-01 \
+    dy=1 \
+    format='%float64' \
+    every :::A1::A2 \
+    using (0):(cb2color($1,cblo,cbhi)):(0):(cb2color($1,cblo,cbhi)) \
+    with rgbalpha
+
+# Mode B
+set bmargin at screen Bb
+set tmargin at screen Bt
+set yrange [B1:B2] noextend
+unset xlabel
+set ylabel "Pulse number" tc rgb "white" font ",20"
+unset xtics
+set border 2+8 # left + right
+plot 'mwa_common.dat' \
+    binary array=(nbins,4780) \
+    origin=(xorig,0) \
+    dx=3.515625e-01 \
+    dy=1 \
+    format='%float64' \
+    every :::B1::B2 \
+    using (0):(cb2color($1,cblo,cbhi)):(0):(cb2color($1,cblo,cbhi)) \
+    with rgbalpha
+
+# Mode C
+set bmargin at screen Cb
+set tmargin at screen Ct
+set yrange [C1:C2] noextend
+set xlabel "Pulse phase"  tc rgb "white" font ",20"
+unset ylabel
+set xtics 15 format "%.0f°"
+set border 1+2+8 # bottom + left + right
+plot 'mwa_common.dat' \
+    binary array=(nbins,4780) \
+    origin=(xorig,0) \
+    dx=3.515625e-01 \
+    dy=1 \
+    format='%float64' \
+    every :::C1::C2 \
+    using (0):(cb2color($1,cblo,cbhi)):(0):(cb2color($1,cblo,cbhi)) \
+    with rgbalpha
+
+
+####################################3
+# GMRT
+
+set palette rgbformulae 3,0,3
+
+cblo = 0.0
+cbhi = 3.0
+set cbrange [*:*] noextend #[0:1.5]
+
+unset xlabel
+unset ylabel
+unset xtics
+unset ytics
+unset border
+
+# Mode A
+set bmargin at screen Ab
+set tmargin at screen At
+set yrange [A1:A2] noextend
+plot 'gmrt_common.dat' \
+    binary array=(nbins,4780) \
+    origin=(xorig+xoffset,0) \
+    dx=3.515625e-01 \
+    dy=1 \
+    format='%float64' \
+    using (cb2color($1,cblo,cbhi)):(0):(cb2color($1,cblo,cbhi)):(cb2color($1,cblo,cbhi)/2) \
+    every :::A1::A2 \
+    with rgbalpha
+
+# Mode B
+set bmargin at screen Bb
+set tmargin at screen Bt
+set yrange [B1:B2] noextend
+plot 'gmrt_common.dat' \
+    binary array=(nbins,4780) \
+    origin=(xorig+xoffset,0) \
+    dx=3.515625e-01 \
+    dy=1 \
+    format='%float64' \
+    using (cb2color($1,cblo,cbhi)):(0):(cb2color($1,cblo,cbhi)):(cb2color($1,cblo,cbhi)/2) \
+    every :::B1::B2 \
+    with rgbalpha
+
+# Mode C
+set bmargin at screen Cb
+set tmargin at screen Ct
+set yrange [C1:C2] noextend
+plot 'gmrt_common.dat' \
+    binary array=(nbins,4780) \
+    origin=(xorig+xoffset,0) \
+    dx=3.515625e-01 \
+    dy=1 \
+    format='%float64' \
+    using (cb2color($1,cblo,cbhi)):(0):(cb2color($1,cblo,cbhi)):(cb2color($1,cblo,cbhi)/2) \
+    every :::C1::C2 \
+    with rgbalpha
+
+unset multiplot
