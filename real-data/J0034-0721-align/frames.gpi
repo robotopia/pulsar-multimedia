@@ -16,9 +16,11 @@ set ytics 20 tc rgb "white"
 
 nbins = 199
 
+maxoffset = 4.0
+
 xorig = -35 # degrees
 xwidth = 70 # degrees
-xoffset = 5.0*sin(clock)**2 # degrees
+xoffset = maxoffset*sin(clock*pi)**2 # degrees
 
 xlo = xorig
 xhi = xorig + xwidth
@@ -178,9 +180,9 @@ xtelesc = -15 # in "first" units
 set label 4 "MWA"  at first xtelesc           , screen 0.95 center tc rgb "green"   font ",32"
 set label 5 "GMRT" at first xtelesc+xoffset+15, screen 0.95 center tc rgb "magenta" font ",32"
 
-if (xoffset > 4.0) { set label 6 "✓" at screen (xright+1.0)/2.0,(Ab+At)/4.0 tc rgb "white" center font ",32" }
-if (xoffset < 1.0) { set label 7 "✓" at screen (xright+1.0)/2.0,(Bb+Bt)/4.0 tc rgb "white" center font ",32" }
-if (xoffset > 4.0) { set label 8 "✓" at screen (xright+1.0)/2.0,(Cb+Ct)/4.0 tc rgb "white" center font ",32" }
+if (xoffset > 0.7*maxoffset && xoffset < 0.9*maxoffset) { set label 6 "✓" at screen (xright+1.0)/2.0,(Ab+At)/2.0-0.05 tc rgb "yellow" center font ",40" }
+if (xoffset < 0.2*maxoffset) { set label 7 "✓" at screen (xright+1.0)/2.0,(Bb+Bt)/2.0-0.05 tc rgb "yellow" center font ",40" }
+if (xoffset > 0.8*maxoffset) { set label 8 "✓" at screen (xright+1.0)/2.0,(Cb+Ct)/2.0-0.05 tc rgb "yellow" center font ",40" }
 
 # Mode C
 set bmargin at screen Cb
