@@ -18,7 +18,7 @@ set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black" behind
 
 fps = 24         # frames per second
 f   = frame[7:10] + 0
-bf  = ((f+24) - floor((f+24)/fps)*fps)*2 + 1
+bf  = ((f+17) - floor((f+17)/fps)*fps)*2 + 1
 blender = sprintf("carousel/%04d.png", bf)
 bh  = 540.0
 bw  = 960.0
@@ -63,7 +63,7 @@ set ytics 10 out nomirror tc rgb "white"
 set xlabel "Rotation phase" tc rgb "white" font ",20"
 set ylabel "Pulse number"   tc rgb "white" font ",20" offset 1.8
 
-set label 1 "MWA" at screen 0.29,0.75 center tc rgb "yellow" font ",30"
+set label 1 "MWA (185 MHz)" at screen 0.29,0.75 center tc rgb "yellow" font ",24"
 
 psh = 100.0      # Number of pulses to display
 ps1 = 110.0      # First pulse to display
@@ -110,7 +110,7 @@ set ytics 10 out nomirror format ""
 set xlabel "Rotation phase" tc rgb "white" font ",20"
 unset ylabel
 
-set label 1 "GMRT" at screen 0.71,0.75 center tc rgb "yellow" font ",30"
+set label 1 "GMRT (610 MHz)" at screen 0.71,0.75 center tc rgb "yellow" font ",24"
 
 psh = 100.0      # Number of pulses to display
 ps1 = 110.0      # First pulse to display
