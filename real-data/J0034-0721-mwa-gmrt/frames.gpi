@@ -1,5 +1,5 @@
 # This script assumes a frame filename is given, e.g.
-# frame = 'frame_0059.png'
+frame = 'frame_0500.png'
 # Frame numbers are expected to range from 0000 to 0959 inclusive
 
 wth = 800
@@ -48,7 +48,7 @@ set rmargin at screen 0.48
 set bmargin at screen 0.10
 set tmargin at screen 0.70
 
-cblo = 0
+cblo = -2
 cbhi = 10
 set cbrange [cblo:cbhi] noextend
 
@@ -61,24 +61,33 @@ set ytics 10 out nomirror tc rgb "white"
 set xlabel "Rotation phase" tc rgb "white" font ",20"
 set ylabel "Pulse number"   tc rgb "white" font ",20" offset 2
 
-fps = 24         # frames per second
-ppf = 1024.0/fps # pixels per frame
-p1  = 1024*50    # starting pixel
+set label 1 "MWA" at screen 0.29,0.75 center tc rgb "yellow" font ",30"
+
+psh = 100.0      # Number of pulses to display
+ps1 = 110.0      # First pulse to display
+xpix = 199.0     # The number of phase bins in the pulsestack (pixels per pulse)
+fps = 48         # frames per second
+ppf = xpix/fps   # pixels per frame
+p1  = xpix*ps1    # starting pixel
 pixel = floor(f*ppf)+p1
 
 trail(val,p,len) = val + (cbhi-val)*(((pixel-(p) < len ? pixel-(p)-len : 0)/len)**2)
-p2x(p) = (p) - floor((p)/1024)*1024    # convert pixel to x value
-p2y(p) = floor((p)/1024)               # convert pixel to y value
+p2x(p) = (p) - floor((p)/xpix)*xpix    # convert pixel to x value
+p2y(p) = floor((p)/xpix)               # convert pixel to y value
 
-set yrange [0+(pixel-p1)/1024.0:100+(pixel-p1)/1024.0] noextend
+ylo = ps1 + pixel/xpix - psh/2.0
+yhi = ps1 + pixel/xpix + psh/2.0
+
+set yrange [ylo:yhi] noextend
 
 plot 'pulsestacks/mwa_common.dat' \
-         binary array=(199,4780) \
+         binary  \
          origin=(-2.988281e+01,0) \
-         dx=3.515625e-01 \
+         dx=6.515625e-01 \
          dy=1 \
          format='%float64' \
-         u ($0 < pixel ? trail($1,$0,150.0) : cbhi) with image
+         u (p2x($0)):(p2y($0)):($0 < pixel ? trail($1,$0,150.0) : cblo) \
+         with image
 
 ####################################################
 
