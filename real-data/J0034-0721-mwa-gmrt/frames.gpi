@@ -16,11 +16,12 @@ unset ylabel
 
 set object 1 rectangle from screen 0,0 to screen 1,1 fc rgb "black" behind
 
-f = frame[7:10] + 0
-bf = ((f+12) - floor((f+12)/24)*24)*2 + 1
+fps = 24         # frames per second
+f   = frame[7:10] + 0
+bf  = ((f+24) - floor((f+24)/fps)*fps)*2 + 1
 blender = sprintf("carousel/%04d.png", bf)
-bh = 540.0
-bw = 960.0
+bh  = 540.0
+bw  = 960.0
 
 set multiplot
 
@@ -114,7 +115,6 @@ set label 1 "GMRT" at screen 0.71,0.75 center tc rgb "yellow" font ",30"
 psh = 100.0      # Number of pulses to display
 ps1 = 110.0      # First pulse to display
 xpix = 199.0     # The number of phase bins in the pulsestack (pixels per pulse)
-fps = 24         # frames per second
 ppf = xpix/fps   # pixels per frame
 p1  = xpix*ps1    # starting pixel
 pixel = floor(f*ppf)+p1
