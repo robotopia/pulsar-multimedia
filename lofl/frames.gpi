@@ -1,0 +1,45 @@
+# This script assumes that "frame" is defined, e.g., as follows
+# frame = "frame_0050.png"
+# It can range from 0000 to 0239
+
+set terminal pngcairo enhanced size 1000,1000 background rgb "black" font ",20"
+set output frame
+
+f = frame[7:10] + 0
+nframes = 240
+viewz = 360.0*f/nframes
+
+set angle radians
+set view equal xyz
+set size ratio -1
+
+unset xlabel
+unset ylabel
+unset zlabel
+unset border
+unset tics
+unset key
+
+set xyplane at 0
+
+P = 0.44
+a = 40
+T = 0.01
+
+drawmag = '< ./drawmag -a %f -p %d -P %f -t %f'
+
+set lt 1 lw 3 lc rgb "magenta"
+set lt 2 pt 7 ps 1.5 lc rgb "green"
+
+set view 60,viewz
+
+departures = "-119 -84 -60 -40 -35 -27 -3 0 50 66 90 104 121 156 180 200 205 213 237"
+fieldlines = "145 309 20 252 123 71 66 98 84 18 161 86 145 309 20 252 123 71 66"
+lifetime   = 50 # i.e. each particle exists on magnetic fieldline for this many frames
+part_pos(i,f) = (f-word(departures,i) < 0        ? 1 : \
+                 f-word(departures,i) > lifetime ? 1 : \
+                 ((f-word(departures,i))*1600)/lifetime) # <-- deliberate integer division
+
+s = 22
+splot for [p=0:359:s] sprintf(drawmag, a, p, P, T) w l lt 1, \
+      for [i=1:words(departures)] sprintf(drawmag, a, word(fieldlines, i)+0, P, T) every ::part_pos(i,f)::part_pos(i,f) lt 2
