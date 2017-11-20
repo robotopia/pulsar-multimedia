@@ -1,5 +1,13 @@
+# This script expects "frame" to be set, e.g.
+# frame = "frame_0050.png"
+# It can range from 0 to 239
+
+f = frame[7:10] + 0
+nframes = 240
+clock = f / (nframes - 1.0)
+
 set terminal pngcairo enhanced size 900,1100 background rgb "black"
-set output 'foo.png'
+set output frame
 
 unset key
 unset colorbox
@@ -10,7 +18,7 @@ nbins = 199
 
 xorig = -35 # degrees
 xwidth = 70 # degrees
-xoffset = 0 # degrees
+xoffset = 5.0*sin(clock)**2 # degrees
 
 xlo = xorig
 xhi = xorig + xwidth
@@ -169,6 +177,10 @@ set label 3 "Mode C" at screen (xright+1.0)/2.0,(Cb+Ct)/2.0 tc rgb "white" cente
 xtelesc = -15 # in "first" units
 set label 4 "MWA"  at first xtelesc           , screen 0.95 center tc rgb "green"   font ",32"
 set label 5 "GMRT" at first xtelesc+xoffset+15, screen 0.95 center tc rgb "magenta" font ",32"
+
+if (xoffset > 4.0) { set label 6 "✓" at screen (xright+1.0)/2.0,(Ab+At)/4.0 tc rgb "white" center font ",32" }
+if (xoffset < 1.0) { set label 7 "✓" at screen (xright+1.0)/2.0,(Bb+Bt)/4.0 tc rgb "white" center font ",32" }
+if (xoffset > 4.0) { set label 8 "✓" at screen (xright+1.0)/2.0,(Cb+Ct)/4.0 tc rgb "white" center font ",32" }
 
 # Mode C
 set bmargin at screen Cb
