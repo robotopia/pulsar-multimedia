@@ -2,7 +2,7 @@
 # frame = "frame_0050.png"
 # It can range from 0000 to 0239
 
-set terminal pngcairo enhanced size 1000,1000 background rgb "black" font ",20"
+set terminal pngcairo enhanced transparent size 800,900 font ",20"
 set output frame
 
 f = frame[7:10] + 0
@@ -28,10 +28,10 @@ T = 0.01
 
 drawmag = '< ./drawmag -a %f -p %d -P %f -t %f'
 
-set lt 1 lw 3 lc rgb "magenta"
-set lt 2 pt 7 ps 1.5 lc rgb "green"
+set lt 1 lw 3 lc rgb "#ffcc00"
+set lt 2 pt 7 ps 1.3 lc rgb "#3333ff"
 
-set view 60,viewz
+set view 60,viewz,1.4,1
 
 departures = "-119 -84 -60 -40 -35 -27 -3 0 50 66 90 104 121 156 180 200 205 213 237"
 fieldlines = "145 309 20 252 123 71 66 98 84 18 161 86 145 309 20 252 123 71 66"
