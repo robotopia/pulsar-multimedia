@@ -2,7 +2,13 @@ NFRAMES = 960
 FRAMES = $(shell seq -w 0 $$(($(NFRAMES)-1)))
 FRAMEFILES = $(patsubst %,frames/frame_%.png,$(FRAMES))
 
-all: pulsar_onebeam.gif
+all: pulsar_onebeam.gif shallow.gif
+
+shallow.gif: $(shell ls shallow*.png)
+	convert -loop 0 -delay 3 -transparent black -dispose 2 $^ $@
+
+steep.gif: $(shell ls steep*.png)
+	convert -loop 0 -delay 3 -transparent black -dispose 2 $^ $@
 
 %_palette.png: %.mpg
 	ffmpeg -y -i $< -vf fps=24,scale=320:-1:flags=lanczos,palettegen $@

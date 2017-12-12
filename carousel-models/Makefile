@@ -2,7 +2,10 @@ NFRAMES = 960
 FRAMES = $(shell seq -w 0 $$(($(NFRAMES)-1)))
 FRAMEFILES = $(patsubst %,frames/frame_%.png,$(FRAMES))
 
-all: pulsar_carousel_reverse.gif pulsar_carousel_accel.gif
+all: pulsar_carousel_reverse.gif pulsar_carousel_accel.gif anaglyph.gif
+
+anaglyph.gif: $(shell ls anaglyph0*.png)
+	convert -loop 0 -delay 3 $^ $@
 
 %_palette.png: %.mpg
 	ffmpeg -y -i $< -vf fps=24,scale=320:-1:flags=lanczos,palettegen $@
