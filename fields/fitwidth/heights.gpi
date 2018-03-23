@@ -1,0 +1,101 @@
+reset
+# This script expects "alpha", "zeta", "period", and "Width" to be defined as strings
+
+a = alpha  + 0
+z = zeta   + 0
+P = period + 0
+w = Width  + 0
+
+set angle degrees
+psi_rvm(ph) = atan2( sin(a)*sin(ph), sin(z)*cos(a) - cos(z)*sin(a)*cos(ph) )
+
+set title sprintf("α = %.2f°,  ζ = %.2f°,  P = %.2f", a, z, P)
+
+polangle_main  = sprintf('a%s_z%s_P%s.psr_polangle.txt',   alpha, zeta, period)
+polangle_inter = sprintf('a%s_z%s_P%s_i.psr_polangle.txt', alpha, zeta, period)
+fitwidth_main  = sprintf('a%s_z%s_P%s_w%s.psr_fitwidth.txt',   alpha, zeta, period, Width)
+
+ph1  = system("tail -1 ".fitwidth_main." | cut -d' ' -f1")
+ph2  = system("tail -1 ".fitwidth_main." | cut -d' ' -f2")
+h    = system("tail -1 ".fitwidth_main." | cut -d' ' -f3")
+psi1 = system("tail -1 ".fitwidth_main." | cut -d' ' -f4")
+psi2 = system("tail -1 ".fitwidth_main." | cut -d' ' -f5")
+
+if (ph1 eq '#') {
+  ph1  = -1001
+  ph2  = -1000
+  h    = 1e10
+  psi1 = -1001
+  psi2 = -1000
+}
+
+pa_slope = (psi2-psi1)/(ph2-ph1)
+
+c = 299792458
+rL = c*P/(2*pi) / 1e3
+rp = 10
+
+set xrange [-180:180]
+set xtics 45
+
+set multiplot
+
+###########################################################
+
+set lmargin at screen 0.15
+set rmargin at screen 0.95
+set bmargin at screen 0.35
+set tmargin at screen 0.90
+
+set format x ""
+
+set yrange [3:rL*10]
+set ylabel "Emission height, h (km)" offset 2,0
+set logscale y
+
+set label 1 "Light cylinder" at graph 0.03, first (rL*1.5) left font ',14'
+set label 2 "Pulsar surface" at graph 0.03, first (rp*1.5) left font ',14'
+
+set arrow 1 from ph1,rp to ph1,h/1e3 dt 3 nohead
+set arrow 2 from ph2,rp to ph2,h/1e3 dt 3 nohead
+set arrow 3 from ph1,h/1e3 to ph2,h/1e3 dt 3 nohead
+
+plot polangle_main  u 4:(sqrt($1**2+$2**2+$3**2)/1e3) w l title "Main pulse", \
+     polangle_inter u 4:(sqrt($1**2+$2**2+$3**2)/1e3) w l title "Interpulse", \
+     rL dt 2 lc rgb "black" notitle, \
+     rp dt 2 lc rgb "black" notitle
+
+###########################################################
+
+set lmargin at screen 0.15
+set rmargin at screen 0.95
+set bmargin at screen 0.15
+set tmargin at screen 0.35
+
+unset title
+
+set xlabel "Rotation phase, φ"
+set format x "%h°"
+
+unset logscale y
+set yrange [-180:180]
+set ytics 45
+set ylabel "Pol. angle" offset 0,0
+set format y "%h°"
+
+set samples 361
+
+unset label
+set label 1 sprintf("P.A. slope across main pulse = %.2f°/°", pa_slope) at graph 0.05, graph 0.85 left font ',14'
+
+unset arrow
+set arrow 1 from ph1,psi1 to ph2,psi1 dt 3 nohead
+set arrow 2 from ph2,psi1 to ph2,psi2 dt 3 nohead
+
+plot polangle_main  u 4:5 w l notitle, \
+     polangle_inter u 4:5 w l notitle, \
+     psi_rvm(x) title "RVM"
+
+###########################################################
+
+unset multiplot

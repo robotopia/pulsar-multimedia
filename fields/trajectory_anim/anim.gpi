@@ -14,10 +14,6 @@ unset key
 unset border
 unset tics
 
-set xlabel "x"
-set ylabel "y"
-set zlabel "z"
-
 c = 299792458
 rL = c*P/(2*pi)
 
@@ -40,12 +36,23 @@ i1 = (floor(t / tstep) <= 37500 ? floor(t / tstep) : 0)
 i2 = (floor(t / tstep) <= 37000 ? floor(t / tstep) : 0)
 i3 = (floor(t / tstep) <= 38000 ? floor(t / tstep) : 0)
 
-set title sprintf("α = %d,  ζ = %d,  P = %.1f", al, ze, P) font ",20" tc rgb "white"
+set title sprintf("α = %d°,  ζ = %d°,  P = %.1f sec\nt = %f sec", al, ze, P, t) font ",20" tc rgb "white"
+
+v = 1e7  # A scaling weight so that the velocity vector has a reasonable length
+a = 1e7
+
+set object 1 rectangle from screen 0, screen 0 to screen 1, screen 1 fc rgb "black" back
 
 splot for [l=0:359:30] Lines index l u (rotx($1,$2,rot)):(roty($1,$2,rot)):3 w l lt 1, \
                        Traj1 every ::::i1 u 2:3:4 w l lt 2 lw 2, \
                        Traj2 every ::::i2 u 2:3:4 w l lt 2 lw 2, \
                        Traj3 every ::::i3 u 2:3:4 w l lt 2 lw 2, \
-                       Traj1 every ::i1::i1 u 2:3:4 w p pt 7 ps 1.5 lc rgb "green", \
+                       Traj1 every ::i1::i1 u 2:3:4 w p pt 7 ps 1.5 lc rgb "red", \
                        Traj2 every ::i2::i2 u 2:3:4 w p pt 7 ps 1.5 lc rgb "green", \
-                       Traj3 every ::i3::i3 u 2:3:4 w p pt 7 ps 1.5 lc rgb "green"
+                       Traj3 every ::i3::i3 u 2:3:4 w p pt 7 ps 1.5 lc rgb "blue", \
+                       Traj1 every ::i1::i1 u 2:3:4:($5*v):($6*v):($7*v) w vectors lc rgb "cyan", \
+                       Traj2 every ::i2::i2 u 2:3:4:($5*v):($6*v):($7*v) w vectors lc rgb "cyan", \
+                       Traj3 every ::i3::i3 u 2:3:4:($5*v):($6*v):($7*v) w vectors lc rgb "cyan", \
+                       Traj1 every ::i1::i1 u 2:3:4:($8*a):($9*a):($10*a) w vectors lc rgb "white", \
+                       Traj2 every ::i2::i2 u 2:3:4:($8*a):($9*a):($10*a) w vectors lc rgb "white", \
+                       Traj3 every ::i3::i3 u 2:3:4:($8*a):($9*a):($10*a) w vectors lc rgb "white"
