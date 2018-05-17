@@ -1,0 +1,59 @@
+# Assumes that the input file has been set to "dat"
+
+reset
+
+set angle degrees
+
+set xlabel "Γ"
+set ylabel "Δφ"
+
+set format xy "%h°"
+
+set samples 10000
+
+
+# All distances are in km
+# All angles    are in degrees
+# All times     are in seconds
+
+P = 0.5
+
+c = 299792.458 # in km/s
+rL = c*P/(2*pi)
+
+rp = 10
+s = 0.5
+R = rp / sin(s)**2
+
+b(G)        = 1.5 * cos(G) / sin(G)
+G_to_th(G)  = atan( -b(G) + sqrt( 2.0 + b(G)**2 ) )
+th_to_G(th) = atan2( 3.0*cos(th)*sin(th), 3.0*cos(th)**2 - 1.0 )
+
+th_to_r(th) = R*sin(th)**2
+th_to_x(th) = R*sin(th)**3
+r_to_x(r)   = r*sqrt(r/R)
+r_to_th(r)  = asin(sqrt(r/R))
+x_to_th(x)  = asin((x/R)**(1.0/3.0))
+G_to_x(G)   = th_to_x(G_to_th(G))
+
+dph_th_to_G(th) = asin(sqrt(((th_to_x(th)/rL)**2 + tan(th_to_G(th))**2)/(1 + tan(th_to_G(th))**2)))
+dph_rot_th_to_dph(th) = asin(th_to_x(th)/(rL*sin(dph_th_to_G(th))))
+
+dph_ret_th_to_dph(th)  = (th_to_r(th)/rL)*180/pi
+#dph_rot(G)  = asin(G_to_x(G)/rL/sin(G))
+
+#dph(G) = dph_ret(G) + dph_rot(G)
+
+max_th = x_to_th(rL)
+max_G  = dph_th_to_G(max_th)
+
+set xrange [0:max_G]
+set trange [0:max_th]
+
+set parametric
+
+plot dat u 3:4 w l lw 2 title "Simulated data", \
+     dph_th_to_G(t), dph_ret_th_to_dph(t) title "Retardation", \
+     dph_th_to_G(t), dph_rot_th_to_dph(t) title "Aberration", \
+     dph_th_to_G(t), dph_rot_th_to_dph(t)+dph_ret_th_to_dph(t) title "Ret. + Aber."
+

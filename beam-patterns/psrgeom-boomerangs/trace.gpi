@@ -1,0 +1,50 @@
+# Assumes that the input file has been set to "dat"
+
+reset
+
+set angle degrees
+
+unset raxis
+unset rtics
+
+set polar
+set size square
+
+set xlabel "x"
+set ylabel "y"
+set format xy "%h°"
+
+set palette model RGB rgbformulae 33,13,10
+set cblabel "Frequency (MHz)"
+set cbrange [*:*] noextend
+set logscale cb
+
+set multiplot layout 2,1
+
+# The footpoints
+
+set xtics 0.5
+set ytics 0.5
+
+plot dat u ($2-90):1 pt 7 ps 0.1 notitle, \
+     '-' pt 2 ps 0.5 lc rgb "black" title "Magnetic axis"
+     0 0
+     e
+
+#######
+
+# The beam shape with colour = emission height
+
+set xtics 30
+set ytics 30
+
+set xrange [-90:90]
+set yrange [-90:90]
+
+plot dat u ($4-90):3:7 pt 7 ps 0.1 lc palette z notitle, \
+     '-' pt 2 ps 0.5 lc rgb "black" title "Magnetic axis"
+     0 0
+     e
+
+
+unset multiplot
