@@ -1,8 +1,20 @@
 TARGETS = s_depend.png \
 		  trace.png \
-		  dph.png
+		  dph.png \
+		  dph_diagram.png \
+		  field_line_diagram.png \
+		  ret_diagram.png
 
 all: $(TARGETS)
+
+ret_diagram.png: ret_diagram.gpi
+	gnuplot -e "set terminal pngcairo size 800,800; set output '$@'" $<
+
+field_line_diagram.png: field_line_diagram.gpi
+	gnuplot -e "set terminal pngcairo size 800,800; set output '$@'" $<
+
+dph_diagram.png: dph_diagram.gpi
+	gnuplot -e "set terminal pngcairo size 800,800; set output '$@'" $<
 
 dph.png: dph.gpi  dph.dat
 	gnuplot -e "set terminal pngcairo size 800,600; set output '$@'; dat = '$(word 2,$^)'" $<

@@ -4,11 +4,11 @@ unset border
 unset tics
 
 set view equal xyz
-set view 69,289
+set view 69,289,1.4
 
-set arrow 1 from -2, 0, 0 to 2,0,0 dt 3 nohead
-set arrow 2 from  0,-2, 0 to 0,2,0 dt 3 nohead
-set arrow 3 from  0, 0,-2 to 0,0,2 dt 3 nohead
+set arrow 1 from -2, 0, 0 to 2.5,  0,0   dt 3 nohead
+set arrow 2 from  0,-1, 0 to   0,2.7,0   dt 3 nohead
+set arrow 3 from  0, 0,-1 to   0,  0,2.0 dt 3 nohead
 
 set arrow 4 from 0,0,0 to 1, 0, 1.5 lw 2 front
 set arrow 5 from 0,0,0 to 0, 2, 0   lw 2 front
@@ -29,6 +29,10 @@ set label 5 "Γ_{dip}" at 0.05, 0.00, 0.50 center tc rgb "blue" font ",12"
 set label 6 "V"   at  0.50,  1.0, 0.90 center font ",16"
 set label 7 "V_B" at  0.50, -0.1, 0.75 center font ",16"
 set label 8 "V_φ" at -0.15,  1.0, 0.00 center font ",16"
+
+set label  9 "x" at  2.5, -0.1, 0.0 center font "Times,14"
+set label 10 "y" at -0.1,  2.7, 0.0 center font "Times,14"
+set label 11 "z" at  0.0,  0.0, 2.1 center font "Times,14"
 
 set xrange [-1:2]
 set yrange [-0.5:2.5]

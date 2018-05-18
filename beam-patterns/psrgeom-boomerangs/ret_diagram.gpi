@@ -1,0 +1,82 @@
+reset
+
+unset border
+unset tics
+
+set angle degrees
+
+set view equal xyz
+set view 65,133,1.8
+
+th  = 40
+G   = 50
+dph = 70
+
+rx = sin(th)
+ry = 0
+rz = cos(th)
+
+vx = sin(G)*cos(dph)
+vy = sin(G)*sin(dph)
+vz = cos(G)
+
+zx = 0
+zy = 0
+zz = 1
+
+# Parametric equations for the great circle connecting r̂ and v̂
+D    = acos(sin(th) * sin(G) + cos(th) * cos(G) * cos(dph))
+A(t) = sin((1 - t) * D) / sin(D)
+B(t) = sin(t*D) / sin(D)
+X(t) = A(t)*sin(th) + B(t)*sin(G)*cos(dph)
+Y(t) =                B(t)*sin(G)*sin(dph)
+Z(t) = A(t)*cos(th) + B(t)*cos(G)
+
+# x-, y-, and z-axes
+set arrow 1 from -3, 0, 0 to 3,0,0 dt 3 nohead
+set arrow 2 from  0,-3, 0 to 0,3,0 dt 3 nohead
+set arrow 3 from  0, 0,-3 to 0,0,3 dt 3 nohead
+
+# Spherical triangle spokes (r̂, v̂, ẑ)
+set arrow 4 from 0,0,0 to rx,ry,rz lw 2 front
+set arrow 5 from 0,0,0 to vx,vy,vz lw 2 front
+set arrow 6 from 0,0,0 to zx,zy,zz lw 2 front
+
+# Dropping perpendiculars and other connecting lines
+set arrow  7 from rx,ry, 0 to rx,ry,rz dt 2 nohead
+set arrow  8 from vx,vy, 0 to vx,vy,vz dt 2 nohead
+set arrow  9 from  0, 0, 0 to rx,ry, 0 dt 2 nohead
+set arrow 10 from  0, 0, 0 to vx,vy, 0 dt 2 nohead
+
+# Angle labels
+set label 4 "Γ"   at 0.19, 0.50, 1.05 center tc rgb "blue" font ",16"
+set label 5 "θ"   at 0.38, 0.00, 1.05 center tc rgb "blue" font ",16"
+set label 6 "Δφ"  at 0.21, 0.18, 1.00 center tc rgb "blue" font ",12"
+set label 7 "v̂∙r̂" at 0.60, 0.43, 0.75 center tc rgb "blue" font ",16"
+
+# Vector labels
+set label 8  "v̂" at  0.30, 0.8, 0.72 center font ",16"
+set label 9  "r̂" at  0.70, 0.0, 0.85 center font ",16"
+set label 10 "ẑ" at  0.00, 0.1, 1.05 center font ",16"
+
+# Axis labels
+set label 11 "x" at  1.5, -0.1, 0.0 center font "Times,14"
+set label 12 "y" at -0.1,  1.7, 0.0 center font "Times,14"
+set label 13 "z" at  0.0,  0.1, 1.4 center font "Times,14"
+
+set xrange [-0.5:1.5]
+set yrange [-0.5:1.5]
+set zrange [-0.2:1.8]
+
+set parametric
+
+set urange [0:1]
+set vrange [0:1]
+
+set key font ",16"
+
+splot 1.5*u-0.5, 1.5*v-0.5, 0 lc rgb "gray" notitle, \
+      sin(u*th), 0, cos(u*th) dt 2 lc rgb "blue" notitle, \
+      sin(u*G)*cos(dph), sin(u*G)*sin(dph), cos(u*G) dt 2 lc rgb "blue" notitle, \
+      X(u), Y(u), Z(u) dt 2 lc rgb "blue" notitle, \
+      0.14*cos(u*dph), 0.14*sin(u*dph), 0.99 lc rgb "blue" notitle

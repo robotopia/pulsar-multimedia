@@ -5,7 +5,7 @@ reset
 set angle degrees
 
 set xlabel "Γ"
-set ylabel "Δφ"
+set ylabel "|Δφ|"
 
 set format xy "%h°"
 
@@ -39,10 +39,7 @@ G_to_x(G)   = th_to_x(G_to_th(G))
 dph_th_to_G(th) = asin(sqrt(((th_to_x(th)/rL)**2 + tan(th_to_G(th))**2)/(1 + tan(th_to_G(th))**2)))
 dph_rot_th_to_dph(th) = asin(th_to_x(th)/(rL*sin(dph_th_to_G(th))))
 
-dph_ret_th_to_dph(th)  = (th_to_r(th)/rL)*180/pi
-#dph_rot(G)  = asin(G_to_x(G)/rL/sin(G))
-
-#dph(G) = dph_ret(G) + dph_rot(G)
+dph_ret_th_to_dph(th)  = (th_to_r(th)*(cos(th)*cos(dph_th_to_G(th)) + sin(th)*sin(dph_th_to_G(th))*cos(dph_rot_th_to_dph(th)))/rL)*180/pi
 
 max_th = x_to_th(rL)
 max_G  = dph_th_to_G(max_th)
