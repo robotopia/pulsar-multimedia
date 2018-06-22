@@ -1,0 +1,65 @@
+# Assumes that alpha angle (degrees) has been set:
+#  e.g.  alpha = 10
+
+P = 0.5 # s
+c = 299792.458 # km/s
+rL = c*P/2/pi  # km
+
+reset
+
+set title sprintf("α = %.1f°", alpha)
+
+dat = sprintf("< psr_beam -d -a %f -g 400 -P %f -z 10 -s 0.48:0.52 -n 50 -f 0:10000 -O -N 4", alpha, P)
+
+set angle degrees
+
+unset raxis
+unset rtics
+
+set polar
+set size square
+
+set xlabel "x"
+set ylabel "y"
+set format xy "%h°"
+
+set palette model HSV rgbformulae 3,2,2
+unset colorbox
+
+set multiplot layout 2,1
+
+# The footpoints
+
+set xtics 0.5
+set ytics 0.5
+
+plot dat u ($2-90):1:2 pt 7 ps 0.5 lc palette z notitle, \
+     1 dt 2 lc rgb "black" notitle, \
+     '-' pt 2 ps 0.5 lc rgb "black" notitle
+     0 0
+     e
+
+#######
+
+# The beam shape with colour = emission height
+
+unset polar
+
+set xtics autofreq
+set ytics autofreq
+
+set logscale xy
+set xrange [*:1.0]
+set yrange [1e3:1e6]
+
+set format xy "%h"
+
+set xlabel "Emission height (r/r_L)"
+set ylabel "Radius of curvature (km)"
+
+unset key
+
+plot dat u ($8/rL):(1/$9):2 pt 7 ps 0.1 lc palette z notitle
+
+
+unset multiplot

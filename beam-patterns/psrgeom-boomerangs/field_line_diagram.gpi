@@ -13,19 +13,39 @@ R = 1
 X(th) = R*sin(th)**3
 Z(th) = R*sin(th)**2*cos(th)
 
-pth = 58
-px  = X(pth)
-pz  = Z(pth)
 
-pGx1 = 0
-pGx2 = R
 
-p_grad = (3.0*cos(pth)**2 - 1.0) / (3.0*cos(pth)*sin(pth))
-pGz1 = pz - p_grad*px
-pGz2 = p_grad * pGx2 + pGz1
-G = atan(p_grad)
+pth1 = 50
+px1  = X(pth1)
+pz1  = Z(pth1)
+
+pGx11 = 0
+pGx21 = R
+
+p_grad1 = (3.0*cos(pth1)**2 - 1.0) / (3.0*cos(pth1)*sin(pth1))
+pGz11 = pz1 - p_grad1*px1
+pGz21 = p_grad1 * pGx21 + pGz11
+G1 = atan(p_grad1)
+
+
+
+
+pth2 = 35
+px2  = X(pth2)
+pz2  = Z(pth2)
+
+pGx12 = 0
+pGx22 = R
+
+p_grad2 = (3.0*cos(pth2)**2 - 1.0) / (3.0*cos(pth2)*sin(pth2))
+pGz12 = pz2 - p_grad2*px2
+pGz22 = p_grad2 * pGx22 + pGz12
+G2 = atan(p_grad2)
 
 mincurv_th = asin(sqrt((-sqrt(13)+5)/3.0))
+
+print px1, pz1
+print px2, pz2
 
 set parametric
 
@@ -39,24 +59,28 @@ set arrow 2 from  0, 0 to 0, 0 dt 3 nohead
 set arrow 3 from  0,-2 to 0, 2 dt 3 nohead
 
 set arrow 4 from 0,0 to  1, 0 lw 2 head
-set arrow 5 from 0,0 to px,pz lw 2 head
-set arrow 6 from pGx1,pGz1 to pGx2,pGz2 dt 2 nohead front
+set arrow 5 from 0,0 to px1,pz1 lw 2 head
+set arrow 6 from pGx11,pGz11 to pGx21,pGz21 dt 2 nohead front
+set arrow 7 from pGx12,pGz12 to pGx22,pGz22 dt 2 nohead front
 
 set label 1 "x" at 1.20, 0.00 center font "Times,16"
-set label 3 "z" at 0.04, 0.80 center font "Times,16"
+set label 2 "z" at 0.04, 0.80 center font "Times,16"
 
-set label 4 "R" at 0.5, -0.04 center font ",20"
-set label 5 "θ" at -0.05, 0.1 center font ",20" front tc rgb "blue"
-set label 6 "Γ_{dip}" at -0.06, 0.1+pGz1 center font ",18" front tc rgb "blue"
+set label 3 "R"       at  0.50, -0.04     center font ",20"
+set label 4 "θ"       at -0.05,  0.1      center font ",20" front tc rgb "blue"
+set label 5 "Γ_{out}" at -0.06,  0.1+pGz11 center font ",18" front tc rgb "blue"
+set label 6 "Γ_{in}"  at -0.06,  0.1+pGz12 center font ",18" front tc rgb "blue"
 
-set object 1 circle at 0,0    radius 0.08 arc [(90-pth):90]
-set object 2 circle at 0,pGz1 radius 0.06 arc [G:90]
+set object 1 circle at 0,0    radius 0.08 arc [(90-pth1):90]
+set object 2 circle at 0,pGz11 radius 0.06 arc [G1:90]
+set object 3 circle at 0,pGz12 radius 0.06 arc [G2:90]
 
 plot  X(t),  Z(t) lw 2 lc rgb "red" title "Magnetic field line", \
       -X(t),  Z(t) lw 1 lc rgb "gray" notitle, \
-      '-' w p pt 7 ps 1.5 lt 2 title "Emission point", \
+      '-' w p pt 7 ps 1.5 lt 2 title "Emission points", \
       '-' w p pt 7 ps 1.5 lt 3 title "Point of minimum curvature"
-      0.609903956300406 0.38111028990037
+      0.449533332339233 0.377203253367745
+      0.188700870691017 0.269492772347878
       e
       0.316899783152044 0.340042152992144
       e

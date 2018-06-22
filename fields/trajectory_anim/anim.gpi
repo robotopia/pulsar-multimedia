@@ -22,6 +22,7 @@ set yrange [-rL:rL]
 set zrange [-rL:rL]
 
 set view equal xyz
+set view ,,1.5
 
 # Functions for rotating points around the z axis
 rotx(x,y,th) = x*cos(th) - y*sin(th)

@@ -1,9 +1,14 @@
+ALPHAS = $(shell seq -w 0 10 90)
+
+ALPHA_TARGETS = $(patsubst %,trace_alpha_%.png,$(ALPHAS))
+
 TARGETS = s_depend.png \
 		  trace.png \
 		  dph.png \
 		  dph_diagram.png \
 		  field_line_diagram.png \
-		  ret_diagram.png
+		  ret_diagram.png \
+		  $(ALPHA_TARGETS)
 
 all: $(TARGETS)
 
@@ -18,6 +23,9 @@ dph_diagram.png: dph_diagram.gpi
 
 dph.png: dph.gpi  dph.dat
 	gnuplot -e "set terminal pngcairo size 800,600; set output '$@'; dat = '$(word 2,$^)'" $<
+
+trace_alpha_%.png: trace_alpha.gpi
+	gnuplot -e "set terminal pngcairo size 600,800; set output '$@'; alpha = '$*' + 0" $<
 
 %.png: %.gpi  %.dat
 	gnuplot -e "set terminal pngcairo size 600,800; set output '$@'; dat = '$(word 2,$^)'" $<
