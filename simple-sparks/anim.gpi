@@ -1,0 +1,35 @@
+# This script assumes that "frame" has been set: 0 <= frame <= 24
+# Also assumes fgc and bgc have been set to foreground colour and background
+# colour, respectively
+
+reset
+
+fr = 25.0        # frames per second
+N  = 7.0         # number of sparks
+P3 = 1.0         # second
+P4 = N * P3      # carousel rotation period
+Om = 2.0*pi/P4   # carousel rotation rate
+
+r = 0.15         # spark radius
+
+t = frame / fr   # time of this frame
+
+
+set object N+1 rectangle from screen 0,0 to screen 1,1 fc rgb bgc behind
+set for [n=1:N] object n circle at cos(Om*t+2*pi*n/N),sin(Om*t+2*pi*n/N) radius r fs solid fc rgb fgc
+
+unset key
+unset border
+unset tics
+
+set xrange [-(1.02+r):1.02+r]
+set yrange [-(1.02+r):1.02+r]
+
+set size ratio -1
+
+set lmargin at screen 0
+set rmargin at screen 1
+set bmargin at screen 0
+set tmargin at screen 1
+
+plot 2+r
