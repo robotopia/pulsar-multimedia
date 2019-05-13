@@ -17,6 +17,7 @@ t = frame / fr   # time of this frame
 
 set object N+1 rectangle from screen 0,0 to screen 1,1 fc rgb bgc behind
 set for [n=1:N] object n circle at cos(Om*t+2*pi*n/N),sin(Om*t+2*pi*n/N) radius r fs solid fc rgb fgc
+set object N+2 circle at 0,0 radius 1.0/15.0 fs solid fc rgb "magenta"
 
 unset key
 unset border

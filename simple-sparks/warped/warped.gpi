@@ -1,0 +1,76 @@
+# This script assumes that "frame" has been set: 0 <= frame <= 24
+# Also assumes fgc and bgc have been set to foreground colour and background
+# colour, respectively
+
+reset
+
+fr = 25.0        # frames per second
+N  = 7.0         # number of sparks around smaller circle
+P3 = 1.0         # second
+P4 = N * P3      # carousel rotation period
+th = 30*pi/180.0 # angle of expanded sector
+K  = 11.0        # number of total sparks around whole path
+
+r  = 1.0         # small carousel radius
+rs = 0.15        # spark radius
+R  = (2*pi*K/N - 2*pi + th + 2)/(2 + th)  # "extended" radius
+
+t = frame / fr   # time of this frame
+
+# Some distance markers along the desired track:
+l0 = 0.0
+l1 = l0 + r*(pi - th/2)
+l2 = l1 + R - r
+l3 = l2 + R*th
+l4 = l3 + R - r
+l5 = l4 + r*(pi - th/2)
+
+L = 2*pi*K/N     # Total path length (= l5, by definition of R above)
+
+# Some key (turning) points along the track
+Ax = r*cos(l1/r);  Ay = r*sin(l1/r)
+Bx = R*cos(l1/r);  By = R*sin(l1/r)
+Cx = R*cos(-l1/r); Cy = R*sin(-l1/r)
+Dx = r*cos(-l1/r); Dy = r*sin(-l1/r)
+
+l(k) = L/K*(k + t) # position of spark k along total path
+
+# Location of an arbitrary point along the curve of length L
+X1(l) = r*cos(l/r);                Y1(l) = r*sin(l/r);
+X2(l) = (l - l1 + r)*cos(l1/r);    Y2(l) = (l - l1 + r)*sin(l1/r);
+X3(l) = R*cos((l - l2)/R + l1/r);  Y3(l) = R*sin((l-l2)/R + l1/r);
+X4(l) = (R - (l - l3))*cos(-l1/r); Y4(l) = (R - (l - l3))*sin(-l1/r);
+X5(l) = r*cos((l - l4 - l1)/r);   Y5(l) = r*sin((l - l4 - l1)/r);
+
+X(l) = (l < l1 ? X1(l) : \
+       (l < l2 ? X2(l) : \
+       (l < l3 ? X3(l) : \
+       (l < l4 ? X4(l) : \
+       (l < l5 ? X5(l) : X(l-L))))))
+
+Y(l) = (l < l1 ? Y1(l) : \
+       (l < l2 ? Y2(l) : \
+       (l < l3 ? Y3(l) : \
+       (l < l4 ? Y4(l) : \
+       (l < l5 ? Y5(l) : X(l-L))))))
+
+
+set object K+1 rectangle from screen 0,0 to screen 1,1 fc rgb bgc behind
+set for [k=0:(K-1)] object k+1 circle at X(l(k)),Y(l(k)) radius rs fs solid fc rgb fgc
+set object K+2 circle at 0,0 radius r/15.0 fs solid fc rgb "magenta"
+
+unset key
+unset border
+unset tics
+
+set xrange [-(0.02+R+rs):0.02+r+rs]
+set yrange [-(0.02+r+rs):0.02+r+rs]
+
+set size ratio -1
+
+set lmargin at screen 0
+set rmargin at screen 1
+set bmargin at screen 0
+set tmargin at screen 1
+
+plot 2+rs
